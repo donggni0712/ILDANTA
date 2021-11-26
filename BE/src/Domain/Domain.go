@@ -82,7 +82,7 @@ type Path struct{
     TransferNum int
     Payment int
     TotalTime int
-    Subpath []SubPath
+    Next []SubPath
 }
 
 type SubPath struct{
@@ -91,5 +91,5 @@ type SubPath struct{
     GetIn string
     Getoff string
     VehicleType int
-    Subpath []SubPath
+	Next []*SubPath
 }

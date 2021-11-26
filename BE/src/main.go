@@ -28,10 +28,14 @@ func main() {
 	err = json.Unmarshal(data, &searchPubTransPathT)
 	
 	
-	var paths []Domain.Path
+	var paths []*Domain.Path
+	var ptr *Domain.Path
 	
 	for _,screamPath := range searchPubTransPathT.Result.Path{
 		var path Domain.Path
+		ptr = &path
+		IsExist := 0
+		var subptr *Domain.SubPath
 		path.VehiclesType = screamPath.PathType
 		path.GetIn = screamPath.Info.FirstStartStation
 		for _,tempSubPath := range screamPath.SubPath{
@@ -54,6 +58,13 @@ func main() {
 		path.TransferNum = screamPath.Info.BusTransitCount + screamPath.Info.SubwayTransitCount
 		path.TotalTime = screamPath.Info.TotalTime
 		
+		for _,SearchSame := range paths{
+			if SearchSame.Name == path.Name && SearchSame.GetIn == path.GetIn && SearchSame.Getoff == path.Getoff{
+				IsExist=1
+				ptr = SearchSame
+			}
+		}
+		
 		IsNotFirstSubPath := 0
 		i:=0
 		
@@ -65,28 +76,42 @@ func main() {
 			if screamSubPath.TrafficType == 2{
 				if IsNotFirstSubPath==1{
 					subpath.Name = screamSubPath.Lane[0].BusNo
-					subpath.Gotoff = path.Getoff
+					subpath.Gotoff = ptr.Getoff
 					subpath.GetIn = screamSubPath.StartName
 					subpath.Getoff = screamSubPath.EndName
 					subpath.VehicleType = screamSubPath.TrafficType
 					IsNotFirstSubPath++
-					path.Subpath = append(path.Subpath,subpath)
+					
+					ptr.Next = append(ptr.Next,subpath)
+					subptr = &ptr.Next[0]
 					continue
 				}
 				if IsNotFirstSubPath==0{
 					IsNotFirstSubPath ++
 					continue
 				}
+			subpath.Name = screamSubPath.Lane[0].BusNo
+			subpath.Gotoff = ptr.Next[i].Getoff
+			i++
+			subpath.GetIn = screamSubPath.StartName
+			subpath.Getoff = screamSubPath.EndName
+			subpath.VehicleType = screamSubPath.TrafficType
+				
+			subptr.Next = append(subptr.Next,&subpath)
+			subptr = subptr.Next[len(subptr.Next)-1]
+
 			}
 			if screamSubPath.TrafficType == 1{
 				if IsNotFirstSubPath==1{
 					subpath.Name = screamSubPath.Lane[0].Name
-					subpath.Gotoff = path.Getoff
+					subpath.Gotoff = ptr.Getoff
 					subpath.GetIn = screamSubPath.StartName
 					subpath.Getoff = screamSubPath.EndName
 					subpath.VehicleType = screamSubPath.TrafficType
 					IsNotFirstSubPath++
-					path.Subpath = append(path.Subpath,subpath)
+					
+					ptr.Next = append(ptr.Next,subpath)
+					subptr = &ptr.Next[0]
 					continue
 				}
 				if IsNotFirstSubPath==0{
@@ -94,15 +119,21 @@ func main() {
 					continue
 				}
 			subpath.Name = screamSubPath.Lane[0].Name
-			subpath.Gotoff = path.Subpath[i].Getoff
+			subpath.Gotoff = ptr.Next[i].Getoff
 			i++
 			subpath.GetIn = screamSubPath.StartName
 			subpath.Getoff = screamSubPath.EndName
 			subpath.VehicleType = screamSubPath.TrafficType
-			path.Subpath = append(path.Subpath,subpath)
+				
+			subptr.Next = append(subptr.Next,&subpath)
+			subptr = subptr.Next[len(subptr.Next)-1]
 			}
 		}
-		paths = append(paths,path)
+		if IsExist==0{
+			paths = append(paths,&path)
+		}
 	}
-	//fmt.Println(paths)
+	for _,i := range paths{
+		fmt.Println(i)
+	}
 }
