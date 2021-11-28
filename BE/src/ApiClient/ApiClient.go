@@ -1,14 +1,13 @@
-package main
+package ApiClient
  
 import (
-	"fmt"
 	"encoding/json"
     "io/ioutil"
     "net/http"
-	"./Domain"
+	"../Domain"
 )
 
-func main() {
+func CallRoute() []*Domain.Path{
 
 	var URL string = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=127.08186574229312&SY=37.23993898645113&EX=127.05981200975921&EY=37.28556112210226"
 	var apikey string = "&apiKey=Mi%2B95EDTMwWb2pbwhatNbhwx4tE4XkBsZ1GiAS2HoGI"
@@ -31,105 +30,125 @@ func main() {
 	var paths []*Domain.Path
 	var ptr *Domain.Path
 	
-	for _,screamPath := range searchPubTransPathT.Result.Path{
+	for _,streamPath := range searchPubTransPathT.Result.Path{
 		var path Domain.Path
-
+		ptr = &path
+		IsExist := 0
 		var subptr *Domain.SubPath
-		path.VehiclesType = screamPath.PathType
-		path.GetIn = screamPath.Info.FirstStartStation
-		for _,tempSubPath := range screamPath.SubPath{
+		path.VehiclesType = streamPath.PathType
+		path.GetIn = streamPath.Info.FirstStartStation
+		for _,tempSubPath := range streamPath.SubPath{
 			if tempSubPath.TrafficType == 3{
 				continue
 			}
 			if tempSubPath.TrafficType == 2{
-				path.VehicleType = tempSubPath.TrafficType
 				path.Name = tempSubPath.Lane[0].BusNo
-				path.Getoff = tempSubPath.EndName
-				break
 			}
 			if tempSubPath.TrafficType == 1{
-				path.VehicleType = tempSubPath.TrafficType
 				path.Name = tempSubPath.Lane[0].Name
-				path.Getoff = tempSubPath.EndName
-				break
 			}
+			path.VehicleType = tempSubPath.TrafficType
+			path.Getoff = tempSubPath.EndName
+			break
 		}
-		path.TransferNum = screamPath.Info.BusTransitCount + screamPath.Info.SubwayTransitCount
-		path.TotalTime = screamPath.Info.TotalTime
+		path.TransferNum = streamPath.Info.BusTransitCount + streamPath.Info.SubwayTransitCount
+		path.TotalTime = streamPath.Info.TotalTime
 		
 		for _,SearchSame := range paths{
 			if SearchSame.Name == path.Name && SearchSame.GetIn == path.GetIn && SearchSame.Getoff == path.Getoff{
-				ptr = &SearchSame
+				IsExist=1
+				ptr = SearchSame
 			}
 		}
 		
 		IsNotFirstSubPath := 0
 		i:=0
 		
-		for _,screamSubPath := range screamPath.SubPath{
+		for _,streamSubPath := range streamPath.SubPath{
 			var subpath Domain.SubPath
-			if screamSubPath.TrafficType == 3{
+			if streamSubPath.TrafficType == 3{
 				continue;
 			}
-			if screamSubPath.TrafficType == 2{
+			//
+			if IsNotFirstSubPath==1{
+				if streamSubPath.TrafficType == 2{
+					subpath.Name = streamSubPath.Lane[0].BusNo
+				}
+				if streamSubPath.TrafficType == 1{
+					subpath.Name = streamSubPath.Lane[0].Name
+				}
+				subpath.Gotoff = ptr.Getoff
+				subpath.GetIn = streamSubPath.StartName
+				subpath.Getoff = streamSubPath.EndName
+				subpath.VehicleType = streamSubPath.TrafficType
+				IsNotFirstSubPath++
+					
+				ptr.Next = append(ptr.Next,subpath)
+				subptr = &ptr.Next[0]
+				continue
+			}
+			if IsNotFirstSubPath==0{
+					IsNotFirstSubPath ++
+					continue
+				}
+			/*
+			if streamSubPath.TrafficType == 2{
 				if IsNotFirstSubPath==1{
-					subpath.Name = screamSubPath.Lane[0].BusNo
-					subpath.Gotoff = path.Getoff
-					subpath.GetIn = screamSubPath.StartName
-					subpath.Getoff = screamSubPath.EndName
-					subpath.VehicleType = screamSubPath.TrafficType
+					subpath.Name = streamSubPath.Lane[0].BusNo
+					subpath.Gotoff = ptr.Getoff
+					subpath.GetIn = streamSubPath.StartName
+					subpath.Getoff = streamSubPath.EndName
+					subpath.VehicleType = streamSubPath.TrafficType
 					IsNotFirstSubPath++
 					
-					path.Next = append(path.Next,subpath)
-					subptr = &path.Next[0]
+					ptr.Next = append(ptr.Next,subpath)
+					subptr = &ptr.Next[0]
 					continue
 				}
 				if IsNotFirstSubPath==0{
 					IsNotFirstSubPath ++
 					continue
 				}
-			subpath.Name = screamSubPath.Lane[0].BusNo
-			subpath.Gotoff = path.Next[i].Getoff
-			i++
-			subpath.GetIn = screamSubPath.StartName
-			subpath.Getoff = screamSubPath.EndName
-			subpath.VehicleType = screamSubPath.TrafficType
-				
-			subptr.Next = append(subptr.Next,&subpath)
-			subptr = subptr.Next[len(subptr.Next)-1]
-
+			subpath.Name = streamSubPath.Lane[0].BusNo
 			}
-			if screamSubPath.TrafficType == 1{
+			if streamSubPath.TrafficType == 1{
 				if IsNotFirstSubPath==1{
-					subpath.Name = screamSubPath.Lane[0].Name
-					subpath.Gotoff = path.Getoff
-					subpath.GetIn = screamSubPath.StartName
-					subpath.Getoff = screamSubPath.EndName
-					subpath.VehicleType = screamSubPath.TrafficType
+					subpath.Name = streamSubPath.Lane[0].Name
+					subpath.Gotoff = ptr.Getoff
+					subpath.GetIn = streamSubPath.StartName
+					subpath.Getoff = streamSubPath.EndName
+					subpath.VehicleType = streamSubPath.TrafficType
 					IsNotFirstSubPath++
 					
-					path.Next = append(path.Next,subpath)
-					subptr = &path.Next[0]
+					ptr.Next = append(ptr.Next,subpath)
+					subptr = &ptr.Next[0]
 					continue
 				}
 				if IsNotFirstSubPath==0{
 					IsNotFirstSubPath ++
 					continue
 				}
-			subpath.Name = screamSubPath.Lane[0].Name
-			subpath.Gotoff = path.Next[i].Getoff
-			i++
-			subpath.GetIn = screamSubPath.StartName
-			subpath.Getoff = screamSubPath.EndName
-			subpath.VehicleType = screamSubPath.TrafficType
-				
-			subptr.Next = append(subptr.Next,&subpath)
-			subptr = subptr.Next[len(subptr.Next)-1]
+			subpath.Name = streamSubPath.Lane[0].Name
 			}
+*/
+			if  streamSubPath.TrafficType == 1{
+				subpath.Name = streamSubPath.Lane[0].Name
+			}
+			if streamSubPath.TrafficType == 2{
+				subpath.Name = streamSubPath.Lane[0].BusNo
+			}
+		subpath.Gotoff = ptr.Next[i].Getoff
+		i++
+		subpath.GetIn = streamSubPath.StartName
+		subpath.Getoff = streamSubPath.EndName
+		subpath.VehicleType = streamSubPath.TrafficType
+			
+		subptr.Next = append(subptr.Next,&subpath)
+		subptr = subptr.Next[len(subptr.Next)-1]
 		}
-		paths = append(paths,path)
+		if IsExist==0{
+			paths = append(paths,&path)
+		}
 	}
-	for _,i := range paths{
-		fmt.Println(i)
-	}
+	return paths
 }
