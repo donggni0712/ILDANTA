@@ -1,6 +1,7 @@
 package ApiClient
  
 import (
+	"fmt"
 	"encoding/json"
     "io/ioutil"
     "net/http"
@@ -9,8 +10,10 @@ import (
 
 
 
-func CallRoute(URL string, apikey string) []*Domain.Path{
+func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Domain.Path{
 
+	URL := fmt.Sprintf("https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=%s&SY=%s&EX=%s&EY=%s",SX,SY,EX,EY)
+	
  	resp, err := http.Get(URL+apikey)
     if err != nil {
         panic(err)

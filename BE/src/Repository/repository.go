@@ -3,15 +3,25 @@ package Repository
 import (
 	"fmt"
 	"../ApiClient"
-	//"../Domain"
+	"../Domain"
 )
 
 func TestApiClient(SX string, SY string, EX string, EY string, apikey string) {
-	URL := fmt.Sprintf("https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=%s&SY=%s&EX=%s&EY=%s",SX,SY,EX,EY)
-	
-	paths := ApiClient.CallRoute(URL,apikey)
+
+	paths := ApiClient.CallRoute(SX,SY,EX,EY,apikey)
 	
 	for _,i := range paths{
 		fmt.Println(i)
+	}
+}
+
+func ShowFirstRoute(SX string, SY string, EX string, EY string, apikey string) {
+	var paths []*Domain.Path
+	paths = ApiClient.CallRoute(SX,SY,EX,EY,apikey)
+	
+	fmt.Println("\t여기서 \t\t 이거타면 \t 환승은 \t 총 시간은")
+	fmt.Println("\t===== \t\t======== \t====== \t\t=========")
+	for _,path := range paths{
+		fmt.Printf("%10s \t %6s \t %3d \t\t %4d\n",path.GetIn,path.Name,path.TransferNum,path.TotalTime)
 	}
 }
