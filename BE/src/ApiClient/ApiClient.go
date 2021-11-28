@@ -7,10 +7,10 @@ import (
 	"../Domain"
 )
 
-func CallRoute() []*Domain.Path{
 
-	var URL string = "https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=127.08186574229312&SY=37.23993898645113&EX=127.05981200975921&EY=37.28556112210226"
-	var apikey string = "&apiKey=Mi%2B95EDTMwWb2pbwhatNbhwx4tE4XkBsZ1GiAS2HoGI"
+
+func CallRoute(URL string, apikey string) []*Domain.Path{
+
  	resp, err := http.Get(URL+apikey)
     if err != nil {
         panic(err)
