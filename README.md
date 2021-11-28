@@ -46,3 +46,9 @@ goormIDE is a powerful cloud IDE service to maximize productivity for developers
 Visit [https://ide.goorm.io](https://ide.goorm.io) to support and learn more about using goormIDE.  
 To watch some usage guides, visit [https://help.goorm.io/en/goormide](https://help.goorm.io/en/goormide)
 # ILDANTA
+
+## ToDo!!
+- [ ] MaxTransferNum, MinTransferNum 반영
+- [ ] MaxTotalTime, MinTotalTime 반영
+- [ ] Figma 참고해서 출력함수 생성
+- [ ] 출력에서 '여기서' 통합, '이거타면' 통합.
