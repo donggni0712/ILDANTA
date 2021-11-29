@@ -79,9 +79,11 @@ type Path struct{
 	Getoff string
     VehicleType int
     VehiclesType int
-    TransferNum int
+    MaxTransferNum int
+	MinTransferNum int
     Payment int
-    TotalTime int
+    MaxTotalTime int
+	MinTotalTime int
     Next []SubPath
 }
 
