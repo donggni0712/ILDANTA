@@ -8,7 +8,7 @@ import (
 	"../Domain"
 )
 
-
+//https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=127.08186574229312&SY=37.23993898645113&EX=127.05981200975921&EY=37.28556112210226&apiKey=Mi%2B95EDTMwWb2pbwhatNbhwx4tE4XkBsZ1GiAS2HoGI
 
 func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Domain.Path{
 
@@ -54,13 +54,27 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 			path.Getoff = tempSubPath.EndName
 			break
 		}
-		path.TransferNum = streamPath.Info.BusTransitCount + streamPath.Info.SubwayTransitCount
-		path.TotalTime = streamPath.Info.TotalTime
+		path.MaxTransferNum = streamPath.Info.BusTransitCount + streamPath.Info.SubwayTransitCount
+		path.MinTransferNum = path.MaxTransferNum
+		path.MaxTotalTime = streamPath.Info.TotalTime
+		path.MinTotalTime = streamPath.Info.TotalTime
 		
 		for _,SearchSame := range paths{
 			if SearchSame.Name == path.Name && SearchSame.GetIn == path.GetIn && SearchSame.Getoff == path.Getoff{
 				IsExist=1
 				ptr = SearchSame
+				if ptr.MaxTransferNum < path.MaxTransferNum{
+					ptr.MaxTransferNum = path.MaxTransferNum
+				}
+				if ptr.MinTransferNum > path.MinTransferNum{
+					ptr.MinTransferNum = path.MinTransferNum
+				}
+				if ptr.MaxTotalTime < path.MaxTotalTime{
+					ptr.MaxTotalTime = path.MaxTotalTime
+				}
+				if ptr.MinTotalTime > path.MinTotalTime{
+					ptr.MinTotalTime = path.MinTotalTime
+				}
 			}
 		}
 		
