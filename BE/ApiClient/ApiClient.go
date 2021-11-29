@@ -85,7 +85,7 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 				subpath.Getoff = streamSubPath.EndName
 				subpath.VehicleType = streamSubPath.TrafficType
 				IsNotFirstSubPath++
-					
+				
 				ptr.Next = append(ptr.Next,subpath)
 				subptr = &ptr.Next[0]
 				continue
