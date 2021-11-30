@@ -95,3 +95,32 @@ type SubPath struct{
     VehicleType int
 	Next []*SubPath
 }
+
+type Result struct{
+	Where string
+	FirstPaths []*FirstPath
+}
+
+type FirstPath struct{
+	Where string //Not Showed
+	Name string
+	TransferNum string
+	TotalTime string
+	AfterPathThemes []*AfterPathTheme
+}
+
+type AfterPathTheme struct{
+	Where string //Not Showed
+	Name string //Not Showed
+	Getoff string
+	AfterPaths []*AfterPath
+}
+
+type AfterPath struct{
+	Where string //Not Showed
+	Name string // Not Showed
+	Getoff string //Not Showed
+	Getin string
+	NextName string
+	AfterPathThemes []*AfterPathTheme
+}

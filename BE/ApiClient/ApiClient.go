@@ -6,11 +6,12 @@ import (
     "io/ioutil"
     "net/http"
 	"../Domain"
+	"../Utils"
 )
 
 //https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=127.08186574229312&SY=37.23993898645113&EX=127.05981200975921&EY=37.28556112210226&apiKey=Mi%2B95EDTMwWb2pbwhatNbhwx4tE4XkBsZ1GiAS2HoGI
 
-func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Domain.Path{
+func CallAPI(SX string, SY string, EX string, EY string, apikey string) []*Domain.Path{
 
 	URL := fmt.Sprintf("https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=%s&SY=%s&EX=%s&EY=%s",SX,SY,EX,EY)
 	
@@ -168,4 +169,69 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 		}
 	}
 	return paths
+}
+
+func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Domain.Result{
+	res := CallAPI(SX,SY,EX,EY,apikey)
+	
+	var ResForPrints []*Domain.Result
+	
+	for _,path := range res{
+		var rfp *Domain.Result
+		rfp = &Domain.Result{}
+		rfp.Where = path.GetIn
+		isExistrfp := 0
+		for _,streamResForPrint := range ResForPrints{
+			if streamResForPrint.Where == rfp.Where{
+				rfp = streamResForPrint
+				isExistrfp = 1
+				break
+			}
+		}
+		
+		var firstPath *Domain.FirstPath
+		firstPath = &Domain.FirstPath{}
+		firstPath.Where = rfp.Where
+		firstPath.Name = path.Name
+		firstPath.TransferNum = Utils.GetFromMinMax(path.MinTransferNum,path.MaxTransferNum)
+		firstPath.TotalTime = Utils.GetFromMinMax(path.MinTotalTime,path.MaxTotalTime)
+		
+		rfp.FirstPaths = append(rfp.FirstPaths,firstPath)
+		
+		if isExistrfp == 0 {
+			ResForPrints = append(ResForPrints,rfp)
+		}
+		
+		for _,subpath := range path.Next{
+			var afterpathTheme *Domain.AfterPathTheme
+			afterpathTheme = &Domain.AfterPathTheme{}
+			isExistAfterPathTheme := 0
+			afterpathTheme.Name = firstPath.Name
+			afterpathTheme.Where = firstPath.Where
+			afterpathTheme.Getoff = subpath.Gotoff
+			for _,streamAfterPathTheme := range firstPath.AfterPathThemes{
+				if streamAfterPathTheme.Getoff == afterpathTheme.Getoff{
+					afterpathTheme = streamAfterPathTheme
+					isExistAfterPathTheme = 1
+					break
+				}
+			}
+			
+			var afterpath *Domain.AfterPath
+			afterpath = &Domain.AfterPath{}
+				afterpath.Where = afterpathTheme.Where
+				afterpath.Name = afterpathTheme.Name
+				afterpath.Getoff = afterpathTheme.Getoff
+				afterpath.Getin = subpath.GetIn
+				afterpath.NextName = subpath.Name
+			
+			afterpathTheme.AfterPaths = append(afterpathTheme.AfterPaths,afterpath)
+			
+			if isExistAfterPathTheme == 0 {
+				firstPath.AfterPathThemes = append(firstPath.AfterPathThemes, afterpathTheme)
+			}
+			
+		}
+	}
+	return ResForPrints
 }
