@@ -193,8 +193,8 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 		firstPath = &Domain.FirstPath{}
 		firstPath.Where = rfp.Where
 		firstPath.Name = path.Name
-		firstPath.TransferNum = Utils.GetFromMinMax(path.MinTransferNum,path.MaxTransferNum)
-		firstPath.TotalTime = Utils.GetFromMinMax(path.MinTotalTime,path.MaxTotalTime)
+		firstPath.TransferNum = Utils.GetFromMinMax(path.MinTransferNum,path.MaxTransferNum,"번")
+		firstPath.TotalTime = Utils.GetFromMinMax(path.MinTotalTime,path.MaxTotalTime,"분")
 		
 		rfp.FirstPaths = append(rfp.FirstPaths,firstPath)
 		
