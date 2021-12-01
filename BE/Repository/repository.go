@@ -26,11 +26,14 @@ func ShowFirstPath(firstPath *Domain.FirstPath){
 	fmt.Printf("\t내려서\t\t여기서\t\t다시 타")
 	for _,afterPathTheme := range firstPath.AfterPathThemes{
 		fmt.Printf("\n==========================================================\n%10s\t",afterPathTheme.Getoff)
-		for _,afterPath := range afterPathTheme.AfterPaths{
-			fmt.Printf("\t%10s\t%10s\n\t\t\t",afterPath.Getin,afterPath.NextName)
+		for _,afterPathParent := range afterPathTheme.AfterPathParents{
+			fmt.Printf("\t%10s\t",afterPathParent.Getin)
+			for _,afterPathChild := range afterPathParent.AfterPathChilds{
+				fmt.Printf("%10s\n\t\t\t\t\t\t\t",afterPathChild.NextName)
+			}
 		}
 	}
-
+	fmt.Println()
 }
 
 func ClickRoute(where string, what string,results []*Domain.Result){

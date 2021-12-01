@@ -242,7 +242,7 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 			afterpathParent.AfterPathChilds = append(afterpathParent.AfterPathChilds,afterpathChild)
 			
 			if isExistAfterPathParent == 0 {
-				afterpathTheme.AfterPathParents = append(afterpathTheme.AfterPathParents,afterPathParent)
+				afterpathTheme.AfterPathParents = append(afterpathTheme.AfterPathParents,afterpathParent)
 			
 				if isExistAfterPathTheme == 0 {
 					firstPath.AfterPathThemes = append(firstPath.AfterPathThemes, afterpathTheme)
