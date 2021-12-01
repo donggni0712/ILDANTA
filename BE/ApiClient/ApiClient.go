@@ -217,18 +217,36 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 				}
 			}
 			
-			var afterpath *Domain.AfterPath
-			afterpath = &Domain.AfterPath{}
-				afterpath.Where = afterpathTheme.Where
-				afterpath.Name = afterpathTheme.Name
-				afterpath.Getoff = afterpathTheme.Getoff
-				afterpath.Getin = subpath.GetIn
-				afterpath.NextName = subpath.Name
+			var afterpathParent *Domain.AfterPathParent
+			afterpathParent = &Domain.AfterPathParent{}
+			afterpathParent.Where = afterpathTheme.Where
+			afterpathParent.Name = afterpathTheme.Name
+			afterpathParent.Getoff = afterpathTheme.Getoff
+			afterpathParent.Getin = subpath.GetIn
 			
-			afterpathTheme.AfterPaths = append(afterpathTheme.AfterPaths,afterpath)
+			var afterpathChild *Domain.AfterPathChild
+			afterpathChild = &Domain.AfterPathChild{}
+			afterpathChild.Getin = subpath.GetIn
+			afterpathChild.NextName = subpath.Name
 			
-			if isExistAfterPathTheme == 0 {
-				firstPath.AfterPathThemes = append(firstPath.AfterPathThemes, afterpathTheme)
+			isExistAfterPathParent := 0
+			
+			for _,streamAfterPathParent := range afterpathTheme.AfterPathParents{
+				if afterpathChild.Getin == streamAfterPathParent.Getin{
+					afterpathParent = streamAfterPathParent
+					isExistAfterPathParent = 1
+					break
+				}
+			}
+			
+			afterpathParent.AfterPathChilds = append(afterpathParent.AfterPathChilds,afterpathChild)
+			
+			if isExistAfterPathParent == 0 {
+				afterpathTheme.AfterPathParents = append(afterpathTheme.AfterPathParents,afterPathParent)
+			
+				if isExistAfterPathTheme == 0 {
+					firstPath.AfterPathThemes = append(firstPath.AfterPathThemes, afterpathTheme)
+				}
 			}
 			
 		}

@@ -113,14 +113,19 @@ type AfterPathTheme struct{
 	Where string //Not Showed
 	Name string //Not Showed
 	Getoff string
-	AfterPaths []*AfterPath
+	AfterPathParents []*AfterPathParent
 }
 
-type AfterPath struct{
+type AfterPathParent struct{
 	Where string //Not Showed
 	Name string // Not Showed
 	Getoff string //Not Showed
 	Getin string
+	AfterPathChilds []*AfterPathChild
+}
+
+type AfterPathChild struct{
+	Getin string //NotShowed
 	NextName string
 	AfterPathThemes []*AfterPathTheme
 }
