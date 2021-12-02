@@ -109,46 +109,6 @@ func CallAPI(SX string, SY string, EX string, EY string, apikey string) []*Domai
 					IsNotFirstSubPath ++
 					continue
 				}
-			/*
-			if streamSubPath.TrafficType == 2{
-				if IsNotFirstSubPath==1{
-					subpath.Name = streamSubPath.Lane[0].BusNo
-					subpath.Gotoff = ptr.Getoff
-					subpath.GetIn = streamSubPath.StartName
-					subpath.Getoff = streamSubPath.EndName
-					subpath.VehicleType = streamSubPath.TrafficType
-					IsNotFirstSubPath++
-					
-					ptr.Next = append(ptr.Next,subpath)
-					subptr = &ptr.Next[0]
-					continue
-				}
-				if IsNotFirstSubPath==0{
-					IsNotFirstSubPath ++
-					continue
-				}
-			subpath.Name = streamSubPath.Lane[0].BusNo
-			}
-			if streamSubPath.TrafficType == 1{
-				if IsNotFirstSubPath==1{
-					subpath.Name = streamSubPath.Lane[0].Name
-					subpath.Gotoff = ptr.Getoff
-					subpath.GetIn = streamSubPath.StartName
-					subpath.Getoff = streamSubPath.EndName
-					subpath.VehicleType = streamSubPath.TrafficType
-					IsNotFirstSubPath++
-					
-					ptr.Next = append(ptr.Next,subpath)
-					subptr = &ptr.Next[0]
-					continue
-				}
-				if IsNotFirstSubPath==0{
-					IsNotFirstSubPath ++
-					continue
-				}
-			subpath.Name = streamSubPath.Lane[0].Name
-			}
-*/
 			if  streamSubPath.TrafficType == 1{
 				subpath.Name = streamSubPath.Lane[0].Name
 			}
@@ -203,7 +163,15 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 		}
 		
 		for _,subpath := range path.Next{
-			var afterpathTheme *Domain.AfterPathTheme
+			AppendAfterPath(firstPath,subpath)
+	}
+	}
+	return ResForPrints
+
+}
+
+func AppendAfterPath(firstPath *Domain.FirstPath, subpath Domain.SubPath){
+	var afterpathTheme *Domain.AfterPathTheme
 			afterpathTheme = &Domain.AfterPathTheme{}
 			isExistAfterPathTheme := 0
 			afterpathTheme.Name = firstPath.Name
@@ -249,7 +217,4 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 				}
 			}
 			
-		}
-	}
-	return ResForPrints
 }
