@@ -36,17 +36,49 @@ func ShowFirstPath(firstPath *Domain.FirstPath){
 	fmt.Println()
 }
 
-func ClickRoute(where string, what string,results []*Domain.Result){
+func ClickRoute(where string, what string,results []*Domain.Result) Domain.FirstPath{
+	
+	var res Domain.FirstPath
 	
 	for _,result := range results{
 		if result.Where == where{
 			for _,firstPath := range result.FirstPaths{
 				if firstPath.Name == what{
 					ShowFirstPath(firstPath)
-					return
+					return *firstPath
 				}
 			}
 		}
 	}
 	fmt.Println("검색값 없음")
+	return res
+}
+
+func ShowSubPath(subpath *Domain.AfterPathChild){
+	fmt.Println(subpath)
+	if subpath.IsFinal == 1{
+		fmt.Printf("끝\n")
+	}
+}
+
+func ClickSubPath(getoff string,getin string, what string,paths []*Domain.AfterPathTheme) Domain.AfterPathChild{
+	
+	var res Domain.AfterPathChild
+	
+	for _,path := range paths{
+		if path.Getoff == getoff{
+			for _,afterPathParent := range path.AfterPathParents{
+				if afterPathParent.Getin == getin{
+					for _,afterPathChild := range afterPathParent.AfterPathChilds{
+					if afterPathChild.NextName == what{
+						ShowSubPath(afterPathChild)
+						return *afterPathChild
+					}
+					}
+				}
+			}
+		}
+	}
+	fmt.Println("검색값 없음")
+	return res
 }

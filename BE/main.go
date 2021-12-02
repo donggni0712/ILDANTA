@@ -24,5 +24,13 @@ func main() {
 	fmt.Scanf("%s",&where)
 	fmt.Scanf("%s",&what)
 	
-	Repository.ClickRoute(where,what,res)
+	temp := Repository.ClickRoute(where,what,res)
+	
+	var getin string
+	var getoff string
+	fmt.Scanf("%s",&getoff)
+	fmt.Scanf("%s",&getin)
+	fmt.Scanf("%s",&what)
+	
+	Repository.ClickSubPath(getoff,getin,what,temp.AfterPathThemes)
 }
