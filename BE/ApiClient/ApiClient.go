@@ -163,14 +163,31 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 		}
 		
 		for _,subpath := range path.Next{
-			AppendAfterPath(firstPath,subpath)
-	}
+			var afterpathChild *Domain.AfterPathChild
+			afterpathChild = &Domain.AfterPathChild{}
+			afterpathChild = AppendAfterPath(firstPath,subpath)
+			ReculsiveAppend(afterpathChild,subpath)
+		}
 	}
 	return ResForPrints
 
 }
 
-func AppendAfterPath(firstPath *Domain.FirstPath, subpath Domain.SubPath){
+func ReculsiveAppend(TopPath *Domain.AfterPathChild, subpath Domain.SubPath){
+	if len(subpath.Next)==0{
+		TopPath.IsFinal = 1
+		return
+	}
+	for _,temppath := range subpath.Next{
+		var afterpathChild *Domain.AfterPathChild
+		afterpathChild = &Domain.AfterPathChild{}
+		afterpathChild = AppendAfterPathFromTop(TopPath,*temppath)
+		ReculsiveAppend(afterpathChild, *temppath)
+	}
+	return
+}
+
+func AppendAfterPath(firstPath *Domain.FirstPath, subpath Domain.SubPath) *Domain.AfterPathChild{
 	var afterpathTheme *Domain.AfterPathTheme
 			afterpathTheme = &Domain.AfterPathTheme{}
 			isExistAfterPathTheme := 0
@@ -216,5 +233,55 @@ func AppendAfterPath(firstPath *Domain.FirstPath, subpath Domain.SubPath){
 					firstPath.AfterPathThemes = append(firstPath.AfterPathThemes, afterpathTheme)
 				}
 			}
+	return afterpathChild
 			
+}
+
+func AppendAfterPathFromTop(TopPath *Domain.AfterPathChild, subpath Domain.SubPath) *Domain.AfterPathChild{
+
+		var afterpathTheme *Domain.AfterPathTheme
+		afterpathTheme = &Domain.AfterPathTheme{}
+		isExistAfterPathTheme := 0
+		afterpathTheme.Getoff = subpath.Gotoff
+		for _,streamAfterPathTheme := range TopPath.AfterPathThemes{
+			if streamAfterPathTheme.Getoff == afterpathTheme.Getoff{
+				afterpathTheme = streamAfterPathTheme
+				isExistAfterPathTheme = 1
+				break
+			}
+		}
+		
+		var afterpathParent *Domain.AfterPathParent
+		afterpathParent = &Domain.AfterPathParent{}
+		afterpathParent.Where = afterpathTheme.Where
+		afterpathParent.Name = afterpathTheme.Name
+		afterpathParent.Getoff = afterpathTheme.Getoff
+		afterpathParent.Getin = subpath.GetIn
+		
+		var afterpathChild *Domain.AfterPathChild
+		afterpathChild = &Domain.AfterPathChild{}
+		afterpathChild.Getin = subpath.GetIn
+		afterpathChild.NextName = subpath.Name
+		
+		isExistAfterPathParent := 0
+		
+		for _,streamAfterPathParent := range afterpathTheme.AfterPathParents{
+			if afterpathChild.Getin == streamAfterPathParent.Getin{
+				afterpathParent = streamAfterPathParent
+				isExistAfterPathParent = 1
+				break
+			}
+		}
+		
+		afterpathParent.AfterPathChilds = append(afterpathParent.AfterPathChilds,afterpathChild)
+		
+		if isExistAfterPathParent == 0 {
+			afterpathTheme.AfterPathParents = append(afterpathTheme.AfterPathParents,afterpathParent)
+		
+			if isExistAfterPathTheme == 0 {
+				TopPath.AfterPathThemes = append(TopPath.AfterPathThemes, afterpathTheme)
+			}
+		}
+	
+	return afterpathChild
 }

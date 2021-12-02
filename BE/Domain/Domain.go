@@ -126,6 +126,7 @@ type AfterPathParent struct{
 
 type AfterPathChild struct{
 	Getin string //NotShowed
+	IsFinal int
 	NextName string
 	AfterPathThemes []*AfterPathTheme
 }
