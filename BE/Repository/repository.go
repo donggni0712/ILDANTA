@@ -10,7 +10,7 @@ func ShowFirstRoute(SX string, SY string, EX string, EY string, apikey string) [
 	
 	results = ApiClient.CallRoute(SX,SY,EX,EY,apikey)
 	
-	fmt.Printf("\t\t여기서\t\t\t이거타면\t환승은\t\t시간은")
+	fmt.Printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\t\t여기서\t\t\t이거타면\t환승은\t\t시간은")
 	for _,result := range results{
 		fmt.Printf("\n====================================================================\n%15s\t",result.Where)
 		for _,firstPath := range result.FirstPaths{
@@ -22,7 +22,7 @@ func ShowFirstRoute(SX string, SY string, EX string, EY string, apikey string) [
 }
 
 func ShowFirstPath(firstPath *Domain.FirstPath, where string){
-	fmt.Printf("일단 %15s에서 %10s 탐\n\n",where,firstPath.Name)
+	fmt.Printf("\n\n\n\n\n\n\n\n\n\n일단 %15s에서 %10s 탐\n\n",where,firstPath.Name)
 	fmt.Printf("\t내려서\t\t여기서\t\t다시 타")
 	for _,afterPathTheme := range firstPath.AfterPathThemes{
 		fmt.Printf("\n==========================================================\n%10s\t",afterPathTheme.Getoff)
@@ -55,7 +55,7 @@ func ClickRoute(where string, what string,results []*Domain.Result) Domain.First
 }
 
 func ShowSubPath(subpath *Domain.AfterPathChild,where string){
-	fmt.Printf("일단 %15s에서 %10s 탐\n\n",where,subpath.NextName)
+	fmt.Printf("\n\n\n\n\n\n\n\n일단 %15s에서 %10s 탐\n\n",where,subpath.NextName)
 	if subpath.IsFinal == 1{
 		fmt.Printf("%10s에서 내려서 걸어가\n",subpath.Getoff)
 		return
