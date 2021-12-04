@@ -30,7 +30,6 @@ func CallAPI(SX string, SY string, EX string, EY string, apikey string) []*Domai
 	var searchPubTransPathT Domain.SearchPubTransPathT
 	err = json.Unmarshal(data, &searchPubTransPathT)
 	
-	
 	var paths []*Domain.Path
 	var ptr *Domain.Path
 	
@@ -120,7 +119,7 @@ func CallAPI(SX string, SY string, EX string, EY string, apikey string) []*Domai
 		subpath.GetIn = streamSubPath.StartName
 		subpath.Getoff = streamSubPath.EndName
 		subpath.VehicleType = streamSubPath.TrafficType
-			
+		
 		subptr.Next = append(subptr.Next,&subpath)
 		subptr = subptr.Next[len(subptr.Next)-1]
 		}
@@ -151,7 +150,6 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 		
 		var firstPath *Domain.FirstPath
 		firstPath = &Domain.FirstPath{}
-		firstPath.Where = rfp.Where
 		firstPath.Name = path.Name
 		firstPath.TransferNum = Utils.GetFromMinMax(path.MinTransferNum,path.MaxTransferNum,"번")
 		firstPath.TotalTime = Utils.GetFromMinMax(path.MinTotalTime,path.MaxTotalTime,"분")
@@ -191,8 +189,6 @@ func AppendAfterPath(firstPath *Domain.FirstPath, subpath Domain.SubPath) *Domai
 	var afterpathTheme *Domain.AfterPathTheme
 			afterpathTheme = &Domain.AfterPathTheme{}
 			isExistAfterPathTheme := 0
-			afterpathTheme.Name = firstPath.Name
-			afterpathTheme.Where = firstPath.Where
 			afterpathTheme.Getoff = subpath.Gotoff
 			for _,streamAfterPathTheme := range firstPath.AfterPathThemes{
 				if streamAfterPathTheme.Getoff == afterpathTheme.Getoff{
@@ -204,20 +200,16 @@ func AppendAfterPath(firstPath *Domain.FirstPath, subpath Domain.SubPath) *Domai
 			
 			var afterpathParent *Domain.AfterPathParent
 			afterpathParent = &Domain.AfterPathParent{}
-			afterpathParent.Where = afterpathTheme.Where
-			afterpathParent.Name = afterpathTheme.Name
-			afterpathParent.Getoff = afterpathTheme.Getoff
 			afterpathParent.Getin = subpath.GetIn
 			
 			var afterpathChild *Domain.AfterPathChild
 			afterpathChild = &Domain.AfterPathChild{}
-			afterpathChild.Getin = subpath.GetIn
 			afterpathChild.NextName = subpath.Name
 			
 			isExistAfterPathParent := 0
 			
 			for _,streamAfterPathParent := range afterpathTheme.AfterPathParents{
-				if afterpathChild.Getin == streamAfterPathParent.Getin{
+				if afterpathParent.Getin == streamAfterPathParent.Getin{
 					afterpathParent = streamAfterPathParent
 					isExistAfterPathParent = 1
 					break
@@ -253,20 +245,16 @@ func AppendAfterPathFromTop(TopPath *Domain.AfterPathChild, subpath Domain.SubPa
 		
 		var afterpathParent *Domain.AfterPathParent
 		afterpathParent = &Domain.AfterPathParent{}
-		afterpathParent.Where = afterpathTheme.Where
-		afterpathParent.Name = afterpathTheme.Name
-		afterpathParent.Getoff = afterpathTheme.Getoff
 		afterpathParent.Getin = subpath.GetIn
 		
 		var afterpathChild *Domain.AfterPathChild
 		afterpathChild = &Domain.AfterPathChild{}
-		afterpathChild.Getin = subpath.GetIn
 		afterpathChild.NextName = subpath.Name
 		
 		isExistAfterPathParent := 0
 		
 		for _,streamAfterPathParent := range afterpathTheme.AfterPathParents{
-			if afterpathChild.Getin == streamAfterPathParent.Getin{
+			if afterpathParent.Getin == streamAfterPathParent.Getin{
 				afterpathParent = streamAfterPathParent
 				isExistAfterPathParent = 1
 				break

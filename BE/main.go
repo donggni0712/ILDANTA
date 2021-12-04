@@ -16,7 +16,7 @@ func main() {
 	
 	var res []*Domain.Result
 	
-	  res = Repository.ShowFirstRoute(SX,SY,EX,EY,apikey)
+	res = Repository.ShowFirstRoute(SX,SY,EX,EY,apikey)
 	
 	var where string
 	var what string

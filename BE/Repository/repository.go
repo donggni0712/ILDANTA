@@ -21,8 +21,8 @@ func ShowFirstRoute(SX string, SY string, EX string, EY string, apikey string) [
 	return results
 }
 
-func ShowFirstPath(firstPath *Domain.FirstPath){
-	fmt.Printf("일단 %15s에서 %10s 탐\n\n",firstPath.Where,firstPath.Name)
+func ShowFirstPath(firstPath *Domain.FirstPath, where string){
+	fmt.Printf("일단 %15s에서 %10s 탐\n\n",where,firstPath.Name)
 	fmt.Printf("\t내려서\t\t여기서\t\t다시 타")
 	for _,afterPathTheme := range firstPath.AfterPathThemes{
 		fmt.Printf("\n==========================================================\n%10s\t",afterPathTheme.Getoff)
@@ -44,7 +44,7 @@ func ClickRoute(where string, what string,results []*Domain.Result) Domain.First
 		if result.Where == where{
 			for _,firstPath := range result.FirstPaths{
 				if firstPath.Name == what{
-					ShowFirstPath(firstPath)
+					ShowFirstPath(firstPath,where)
 					return *firstPath
 				}
 			}
