@@ -54,11 +54,23 @@ func ClickRoute(where string, what string,results []*Domain.Result) Domain.First
 	return res
 }
 
-func ShowSubPath(subpath *Domain.AfterPathChild){
-	fmt.Println(subpath)
+func ShowSubPath(subpath *Domain.AfterPathChild,where string){
+	fmt.Printf("일단 %15s에서 %10s 탐\n\n",where,subpath.NextName)
 	if subpath.IsFinal == 1{
-		fmt.Printf("끝\n")
+		fmt.Printf("%10s에서 내려서 걸어가\n",subpath.Getoff)
+		return
 	}
+	fmt.Printf("\t내려서\t\t여기서\t\t다시 타")
+	for _,afterPathTheme := range subpath.AfterPathThemes{
+		fmt.Printf("\n==========================================================\n%10s\t",afterPathTheme.Getoff)
+		for _,afterPathParent := range afterPathTheme.AfterPathParents{
+			fmt.Printf("\t%10s\t",afterPathParent.Getin)
+			for _,afterPathChild := range afterPathParent.AfterPathChilds{
+				fmt.Printf("%10s\n\t\t\t\t\t\t\t",afterPathChild.NextName)
+			}
+		}
+	}
+	fmt.Println()
 }
 
 func ClickSubPath(getoff string,getin string, what string,paths []*Domain.AfterPathTheme) Domain.AfterPathChild{
@@ -71,7 +83,7 @@ func ClickSubPath(getoff string,getin string, what string,paths []*Domain.AfterP
 				if afterPathParent.Getin == getin{
 					for _,afterPathChild := range afterPathParent.AfterPathChilds{
 					if afterPathChild.NextName == what{
-						ShowSubPath(afterPathChild)
+						ShowSubPath(afterPathChild,getin)
 						return *afterPathChild
 					}
 					}

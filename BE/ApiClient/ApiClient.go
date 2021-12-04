@@ -205,6 +205,7 @@ func AppendAfterPath(firstPath *Domain.FirstPath, subpath Domain.SubPath) *Domai
 			var afterpathChild *Domain.AfterPathChild
 			afterpathChild = &Domain.AfterPathChild{}
 			afterpathChild.NextName = subpath.Name
+			afterpathChild.Getoff = subpath.Getoff
 			
 			isExistAfterPathParent := 0
 			
@@ -225,8 +226,7 @@ func AppendAfterPath(firstPath *Domain.FirstPath, subpath Domain.SubPath) *Domai
 					firstPath.AfterPathThemes = append(firstPath.AfterPathThemes, afterpathTheme)
 				}
 			}
-	return afterpathChild
-			
+	return afterpathChild	
 }
 
 func AppendAfterPathFromTop(TopPath *Domain.AfterPathChild, subpath Domain.SubPath) *Domain.AfterPathChild{
@@ -250,7 +250,8 @@ func AppendAfterPathFromTop(TopPath *Domain.AfterPathChild, subpath Domain.SubPa
 		var afterpathChild *Domain.AfterPathChild
 		afterpathChild = &Domain.AfterPathChild{}
 		afterpathChild.NextName = subpath.Name
-		
+		afterpathChild.Getoff = subpath.Getoff
+	
 		isExistAfterPathParent := 0
 		
 		for _,streamAfterPathParent := range afterpathTheme.AfterPathParents{
@@ -270,6 +271,5 @@ func AppendAfterPathFromTop(TopPath *Domain.AfterPathChild, subpath Domain.SubPa
 				TopPath.AfterPathThemes = append(TopPath.AfterPathThemes, afterpathTheme)
 			}
 		}
-	
 	return afterpathChild
 }

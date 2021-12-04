@@ -24,6 +24,7 @@ type AfterPathParent struct{
 
 type AfterPathChild struct{
 	IsFinal int
+	Getoff string
 	NextName string
 	AfterPathThemes []*AfterPathTheme
 }
