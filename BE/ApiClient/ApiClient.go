@@ -13,9 +13,8 @@ import (
 
 func CallAPI(SX string, SY string, EX string, EY string, apikey string) []*Domain.Path {
 
-	URL := fmt.Sprintf("https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=%s&SY=%s&EX=%s&EY=%s", SX, SY, EX, EY)
-
-	resp, err := http.Get(URL + apikey)
+	URL := fmt.Sprintf("https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=%s&SY=%s&EX=%s&EY=%s&apiKey=%s", SX, SY, EX, EY, apikey)
+	resp, err := http.Get(URL)
 	if err != nil {
 		panic(err)
 	}
