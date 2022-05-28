@@ -2,6 +2,10 @@
 
 ![LOGO](./DOC/img/LOGO.png)
 
+## Mock-up
+
+![MockUp](./DOC/img/ILDANTA_UI.gif)
+
 ## ToDo!!
 
 - [x] MaxTransferNum, MinTransferNum 반영(21.11.30)
