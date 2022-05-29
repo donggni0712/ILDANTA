@@ -3,6 +3,7 @@ package Rest
 import (
 	"ILDANTA/Domain"
 	"ILDANTA/Repository"
+	"ILDANTA/Utils"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -65,13 +66,9 @@ func Search(rw http.ResponseWriter, r *http.Request) {
 
 func Choose_TakeOn(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-
-	sx := vars["sx"]
-	sy := vars["sy"]
-	ex := vars["ex"]
-	ey := vars["ey"]
 	var tempresult []*Domain.Result
-	tempresult = Repository.ShowFirstRoute(sx, sy, ex, ey, Apikey)
+
+	Utils.HandleErr(json.NewDecoder(r.Body).Decode(&tempresult))
 
 	//처음에 뭐 탈 지
 	where := vars["whereOn"]
@@ -84,24 +81,15 @@ func Choose_TakeOn(rw http.ResponseWriter, r *http.Request) {
 
 func Choose_TakeOffandTakeOn(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	sx := vars["sx"]
-	sy := vars["sy"]
-	ex := vars["ex"]
-	ey := vars["ey"]
-	var tempresult []*Domain.Result
-	tempresult = Repository.ShowFirstRoute(sx, sy, ex, ey, Apikey)
 
-	//처음에 뭐 탈 지
-	where := vars["whereOn"]
-	what := vars["whatOn"]
-	var result Domain.FirstPath
-	result = Repository.ClickRoute(where, what, tempresult)
+	var tempresult Domain.FirstPath
+	Utils.HandleErr(json.NewDecoder(r.Body).Decode(&tempresult))
 	//어디서 내려서 뭐 탈 지
 	whereOff := vars["whereOff"]
 	whereOn := vars["whereOn2"]
 	whatOn := vars["whatOn2"]
 
-	Repository.ClickSubPath(whereOff, whereOn, whatOn, result.AfterPathThemes)
+	Repository.ClickSubPath(whereOff, whereOn, whatOn, tempresult.AfterPathThemes)
 
 	rw.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(rw).Encode(vars)
@@ -112,8 +100,8 @@ func Start(aPort int) {
 	port = fmt.Sprintf(":%d", aPort)
 	router.HandleFunc("/", documentation).Methods("GET")
 	router.HandleFunc("/Search/{sx}&{sy}&{ex}&{ey}", Search).Methods("GET")
-	router.HandleFunc("/Search/{sx}&{sy}&{ex}&{ey}/ChooseTakeOn/{whereOn}&{whatOn}", Choose_TakeOn).Methods("GET")
-	router.HandleFunc("/Search/{sx}&{sy}&{ex}&{ey}/ChooseTakeOn/{whereOn}&{whatOn}/ChooseTakeOffOn/{whereOff}&{whereOn2}&{whatOn2}", Choose_TakeOffandTakeOn).Methods("GET")
+	router.HandleFunc("/Search/ChooseTakeOn/{whereOn}&{whatOn}", Choose_TakeOn).Methods("GET")
+	router.HandleFunc("/Search/ChooseTakeOffOn/{whereOff}&{whereOn2}&{whatOn2}", Choose_TakeOffandTakeOn).Methods("GET")
 
 	fmt.Printf("Listening on http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, router))
