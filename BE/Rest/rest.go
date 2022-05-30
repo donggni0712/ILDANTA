@@ -1,8 +1,9 @@
 package Rest
 
 import (
+	"ILDANTA/ApiClient"
 	"ILDANTA/Domain"
-	"ILDANTA/Repository"
+	"ILDANTA/Service"
 	"ILDANTA/Utils"
 	"encoding/json"
 	"fmt"
@@ -59,7 +60,7 @@ func Search(rw http.ResponseWriter, r *http.Request) {
 	ex := vars["ex"]
 	ey := vars["ey"]
 	//처음 경로 출력
-	result := Repository.ShowFirstRoute(sx, sy, ex, ey, Apikey)
+	result := Service.ShowFirstRoute(sx, sy, ex, ey, Apikey)
 	rw.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(rw).Encode(result)
 }
@@ -73,7 +74,7 @@ func Choose_TakeOn(rw http.ResponseWriter, r *http.Request) {
 	//처음에 뭐 탈 지
 	where := vars["whereOn"]
 	what := vars["whatOn"]
-	result := Repository.ClickRoute(where, what, tempresult)
+	result := Service.ClickRoute(where, what, tempresult)
 
 	rw.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(rw).Encode(result)
@@ -89,16 +90,29 @@ func Choose_TakeOffandTakeOn(rw http.ResponseWriter, r *http.Request) {
 	whereOn := vars["whereOn2"]
 	whatOn := vars["whatOn2"]
 
-	Repository.ClickSubPath(whereOff, whereOn, whatOn, tempresult.AfterPathThemes)
+	result := Service.ClickSubPath(whereOff, whereOn, whatOn, tempresult.AfterPathThemes)
 
 	rw.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(rw).Encode(vars)
+	json.NewEncoder(rw).Encode(result)
+}
+
+func SeeRawData(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	sx := vars["sx"]
+	sy := vars["sy"]
+	ex := vars["ex"]
+	ey := vars["ey"]
+	//처음 경로 출력
+	result := ApiClient.CallAPI(sx, sy, ex, ey, Apikey)
+	rw.Header().Add("Content-Type", "application/json")
+	json.NewEncoder(rw).Encode(result)
 }
 
 func Start(aPort int) {
 	router := mux.NewRouter()
 	port = fmt.Sprintf(":%d", aPort)
 	router.HandleFunc("/", documentation).Methods("GET")
+	router.HandleFunc("/development/RawData/{sx}&{sy}&{ex}&{ey}", SeeRawData).Methods("GET")
 	router.HandleFunc("/Search/{sx}&{sy}&{ex}&{ey}", Search).Methods("GET")
 	router.HandleFunc("/Search/ChooseTakeOn/{whereOn}&{whatOn}", Choose_TakeOn).Methods("GET")
 	router.HandleFunc("/Search/ChooseTakeOffOn/{whereOff}&{whereOn2}&{whatOn2}", Choose_TakeOffandTakeOn).Methods("GET")

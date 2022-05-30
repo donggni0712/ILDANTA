@@ -1,14 +1,13 @@
-package Repository
+package Service
 
 import (
-	"ILDANTA/ApiClient"
 	"ILDANTA/Domain"
 	"fmt"
 )
 
 func ShowFirstRoute(SX string, SY string, EX string, EY string, apikey string) []*Domain.Result {
 	var results []*Domain.Result
-	results = ApiClient.CallRoute(SX, SY, EX, EY, apikey)
+	results = CallRoute(SX, SY, EX, EY, apikey)
 
 	fmt.Printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\t\t여기서\t\t\t이거타면\t환승은\t\t시간은")
 	for _, result := range results {

@@ -86,7 +86,19 @@ type Path struct {
 	Payment        int
 	MaxTotalTime   int
 	MinTotalTime   int
-	Next           []SubPath
+	Next           []*SubPath
+}
+
+func (path *Path) SetPath(Name, GetIn, GetOff string, VehicleType, MaxtransferNum, MinTransferNum, MaxTotalTime, MinTotalTime int) {
+	path.Name = Name
+	path.GetIn = GetIn
+	path.Getoff = GetOff
+	path.VehicleType = VehicleType
+
+	path.MaxTransferNum = MaxtransferNum
+	path.MinTransferNum = MinTransferNum
+	path.MaxTotalTime = MaxTotalTime
+	path.MinTotalTime = MinTotalTime
 }
 
 type SubPath struct {
@@ -96,4 +108,12 @@ type SubPath struct {
 	Getoff      string
 	VehicleType int
 	Next        []*SubPath
+}
+
+func (subpath *SubPath) SetSubpath(Name, Gotoff, GetIn, Getoff string, VehicleType int) {
+	subpath.Name = Name
+	subpath.Gotoff = Gotoff
+	subpath.GetIn = GetIn
+	subpath.Getoff = Getoff
+	subpath.VehicleType = VehicleType
 }
