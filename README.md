@@ -6,6 +6,19 @@
 
 ![MockUp](./DOC/img/ILDANTA_UI.gif)
 
+## RestAPI
+
+- [GET] "/development/RawData/{sx}&{sy}&{ex}&{ey}"
+  - ODsayAPI를 정제하기만 한 날 것의 데이터 보기
+- [GET] "/Search/{sx}&{sy}&{ex}&{ey}"
+  - 출발지에서 도착지까지 가는 경로 출력
+- [GET] "/Search/ChooseTakeOn/{whereOn}&{whatOn}" body : {json}
+  - Search에서 어디서 무엇을 탈 지 선택하면 해당 경로의 하위 경로 출력
+  - request body에는 /Search의 response body 입력
+- [GET] "Search/ChooseTakeOffOn/{whereOff}&{whereOn2}&{whatOn2}" body : {json}
+  - Search/ChooseTakeOn에서 선택한 경로의 하위 경로 출력
+  - request body에는 /Search/ChooseTakeOn의 response body 입력
+
 ## ToDo!!
 
 - [x] MaxTransferNum, MinTransferNum 반영(21.11.30)
