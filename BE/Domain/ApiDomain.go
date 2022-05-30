@@ -28,70 +28,72 @@ type SearchPubTransPathT struct {
 				TotalDistance      int    `json:"totalDistance"`
 				TotalWalkTime      int    `json:"totalWalkTime"`
 			} `json:"info"`
-			SubPath []struct {
-				TrafficType  int `json:"trafficType"`
-				Distance     int `json:"distance"`
-				SectionTime  int `json:"sectionTime"`
-				StationCount int `json:"stationCount,omitempty"`
-				Lane         []struct {
-					BusNo string `json:"busNo"`
-					Type  int    `json:"type"`
-					BusID int    `json:"busID"`
-					Name string  `json:"name"`
-					SubwayCode int `json:"subwayCode"`
-					SubwayCityCode int `json:"subwayCityCode"`
-				} `json:"lane,omitempty"`
-				StartName    string  `json:"startName,omitempty"`
-				StartX       float64 `json:"startX,omitempty"`
-				StartY       float64 `json:"startY,omitempty"`
-				EndName      string  `json:"endName,omitempty"`
-				EndX         float64 `json:"endX,omitempty"`
-				EndY         float64 `json:"endY,omitempty"`
-				StartID      int     `json:"startID,omitempty"`
-				EndID        int     `json:"endID,omitempty"`
-				PassStopList struct {
-					Stations []struct {
-						Index       int    `json:"index"`
-						StationID   int    `json:"stationID"`
-						StationName string `json:"stationName"`
-						X           string `json:"x"`
-						Y           string `json:"y"`
-						IsNonStop   string `json:"isNonStop"`
-					} `json:"stations"`
-				} `json:"passStopList,omitempty"`
-				Way         string  `json:"way,omitempty"`
-				WayCode     int     `json:"wayCode,omitempty"`
-				Door        string  `json:"door,omitempty"`
-				StartExitNo string  `json:"startExitNo,omitempty"`
-				StartExitX  float64 `json:"startExitX,omitempty"`
-				StartExitY  float64 `json:"startExitY,omitempty"`
-				EndExitNo   string  `json:"endExitNo,omitempty"`
-				EndExitX    float64 `json:"endExitX,omitempty"`
-				EndExitY    float64 `json:"endExitY,omitempty"`
-			} `json:"subPath"`
+			SubPath []SubPath_response `json:"subPath"`
 		} `json:"path"`
 	} `json:"result"`
 }
 
-type Path struct{
-    Name string
-    GetIn string
-	Getoff string
-    VehicleType int
-    VehiclesType int
-    MaxTransferNum int
-	MinTransferNum int
-    Payment int
-    MaxTotalTime int
-	MinTotalTime int
-    Next []SubPath
+type SubPath_response struct {
+	TrafficType  int `json:"trafficType"`
+	Distance     int `json:"distance"`
+	SectionTime  int `json:"sectionTime"`
+	StationCount int `json:"stationCount,omitempty"`
+	Lane         []struct {
+		BusNo          string `json:"busNo"`
+		Type           int    `json:"type"`
+		BusID          int    `json:"busID"`
+		Name           string `json:"name"`
+		SubwayCode     int    `json:"subwayCode"`
+		SubwayCityCode int    `json:"subwayCityCode"`
+	} `json:"lane,omitempty"`
+	StartName    string  `json:"startName,omitempty"`
+	StartX       float64 `json:"startX,omitempty"`
+	StartY       float64 `json:"startY,omitempty"`
+	EndName      string  `json:"endName,omitempty"`
+	EndX         float64 `json:"endX,omitempty"`
+	EndY         float64 `json:"endY,omitempty"`
+	StartID      int     `json:"startID,omitempty"`
+	EndID        int     `json:"endID,omitempty"`
+	PassStopList struct {
+		Stations []struct {
+			Index       int    `json:"index"`
+			StationID   int    `json:"stationID"`
+			StationName string `json:"stationName"`
+			X           string `json:"x"`
+			Y           string `json:"y"`
+			IsNonStop   string `json:"isNonStop"`
+		} `json:"stations"`
+	} `json:"passStopList,omitempty"`
+	Way         string  `json:"way,omitempty"`
+	WayCode     int     `json:"wayCode,omitempty"`
+	Door        string  `json:"door,omitempty"`
+	StartExitNo string  `json:"startExitNo,omitempty"`
+	StartExitX  float64 `json:"startExitX,omitempty"`
+	StartExitY  float64 `json:"startExitY,omitempty"`
+	EndExitNo   string  `json:"endExitNo,omitempty"`
+	EndExitX    float64 `json:"endExitX,omitempty"`
+	EndExitY    float64 `json:"endExitY,omitempty"`
 }
 
-type SubPath struct{
-    Name string
-    Gotoff string
-    GetIn string
-    Getoff string
-    VehicleType int
-	Next []*SubPath
+type Path struct {
+	Name           string
+	GetIn          string
+	Getoff         string
+	VehicleType    int
+	VehiclesType   int
+	MaxTransferNum int
+	MinTransferNum int
+	Payment        int
+	MaxTotalTime   int
+	MinTotalTime   int
+	Next           []SubPath
+}
+
+type SubPath struct {
+	Name        string
+	Gotoff      string
+	GetIn       string
+	Getoff      string
+	VehicleType int
+	Next        []*SubPath
 }

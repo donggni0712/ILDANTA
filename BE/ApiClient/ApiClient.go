@@ -11,7 +11,134 @@ import (
 
 //https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=127.08186574229312&SY=37.23993898645113&EX=127.05981200975921&EY=37.28556112210226&apiKey=Mi%2B95EDTMwWb2pbwhatNbhwx4tE4XkBsZ1GiAS2HoGI
 
-func CallAPI(SX string, SY string, EX string, EY string, apikey string) []*Domain.Path {
+func IsSameExist(paths []*Domain.Path, name string, getIn string, getOff string) (IsExist int, result *Domain.Path) {
+	IsExist = 0
+	for _, SearchSame := range paths {
+		if SearchSame.Name == name && SearchSame.GetIn == getIn && SearchSame.Getoff == getOff {
+			IsExist = 1
+			result = SearchSame
+		}
+	}
+	return IsExist, result
+}
+
+func Match(paths []*Domain.Path, ptr *Domain.Path, path Domain.Path, streamPaths []Domain.SubPath_response, subptr *Domain.SubPath) []*Domain.Path {
+	IsNotFirstSubPath := 0
+	i := 0
+	IsExist := 0
+	if i, res := IsSameExist(paths, path.Name, path.GetIn, path.Getoff); i == 1 {
+		IsExist = 1
+		ptr = res
+		if ptr.MaxTransferNum < path.MaxTransferNum {
+			ptr.MaxTransferNum = path.MaxTransferNum
+		}
+		if ptr.MinTransferNum > path.MinTransferNum {
+			ptr.MinTransferNum = path.MinTransferNum
+		}
+		if ptr.MaxTotalTime < path.MaxTotalTime {
+			ptr.MaxTotalTime = path.MaxTotalTime
+		}
+		if ptr.MinTotalTime > path.MinTotalTime {
+			ptr.MinTotalTime = path.MinTotalTime
+		}
+	}
+
+	for _, streamSubPath := range streamPaths {
+		var subpath Domain.SubPath
+		if streamSubPath.TrafficType == 3 {
+			continue
+		}
+		//
+		if IsNotFirstSubPath == 1 {
+			if streamSubPath.TrafficType == 2 {
+				subpath.Name = streamSubPath.Lane[0].BusNo
+			}
+			if streamSubPath.TrafficType == 1 {
+				subpath.Name = streamSubPath.Lane[0].Name
+			}
+			subpath.Gotoff = ptr.Getoff
+			subpath.GetIn = streamSubPath.StartName
+			subpath.Getoff = streamSubPath.EndName
+			subpath.VehicleType = streamSubPath.TrafficType
+			IsNotFirstSubPath++
+
+			ptr.Next = append(ptr.Next, subpath)
+			subptr = &ptr.Next[0]
+			continue
+		}
+		if IsNotFirstSubPath == 0 {
+			IsNotFirstSubPath++
+			continue
+		}
+		if streamSubPath.TrafficType == 1 {
+			subpath.Name = streamSubPath.Lane[0].Name
+		}
+		if streamSubPath.TrafficType == 2 {
+			subpath.Name = streamSubPath.Lane[0].BusNo
+		}
+		subpath.Gotoff = ptr.Next[i].Getoff
+		i++
+		subpath.GetIn = streamSubPath.StartName
+		subpath.Getoff = streamSubPath.EndName
+		subpath.VehicleType = streamSubPath.TrafficType
+
+		subptr.Next = append(subptr.Next, &subpath)
+		subptr = subptr.Next[len(subptr.Next)-1]
+	}
+	if IsExist == 0 {
+		paths = append(paths, &path)
+	}
+	return paths
+
+}
+
+func MatchFirstPath(response Domain.SearchPubTransPathT) []*Domain.Path {
+	var paths []*Domain.Path
+	var ptr *Domain.Path
+
+	for _, streamPath := range response.Result.Path {
+		var path Domain.Path
+		ptr = &path
+
+		var subptr *Domain.SubPath
+		path.VehiclesType = streamPath.PathType
+		path.GetIn = streamPath.Info.FirstStartStation
+		for _, tempSubPath := range streamPath.SubPath {
+			if tempSubPath.TrafficType == 3 {
+				continue
+			}
+			if tempSubPath.TrafficType == 2 {
+				for _, busLists := range tempSubPath.Lane {
+					path.Name = busLists.BusNo
+
+					path.VehicleType = tempSubPath.TrafficType
+					path.Getoff = tempSubPath.EndName
+					path.MaxTransferNum = streamPath.Info.BusTransitCount + streamPath.Info.SubwayTransitCount
+					path.MinTransferNum = path.MaxTransferNum
+					path.MaxTotalTime = streamPath.Info.TotalTime
+					path.MinTotalTime = streamPath.Info.TotalTime
+					paths = Match(paths, ptr, path, streamPath.SubPath, subptr)
+				}
+			}
+			if tempSubPath.TrafficType == 1 {
+				path.Name = tempSubPath.Lane[0].Name
+			}
+			path.VehicleType = tempSubPath.TrafficType
+			path.Getoff = tempSubPath.EndName
+			break
+		}
+		path.MaxTransferNum = streamPath.Info.BusTransitCount + streamPath.Info.SubwayTransitCount
+		path.MinTransferNum = path.MaxTransferNum
+		path.MaxTotalTime = streamPath.Info.TotalTime
+		path.MinTotalTime = streamPath.Info.TotalTime
+
+		paths = Match(paths, ptr, path, streamPath.SubPath, subptr)
+	}
+	return paths
+}
+
+//Require (x,y) of start position, end position and apikey. Return reponse of Calling ODsay API.
+func CallAPI(SX string, SY string, EX string, EY string, apikey string) Domain.SearchPubTransPathT {
 
 	URL := fmt.Sprintf("https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=%s&SY=%s&EX=%s&EY=%s&apiKey=%s", SX, SY, EX, EY, apikey)
 	resp, err := http.Get(URL)
@@ -29,109 +156,12 @@ func CallAPI(SX string, SY string, EX string, EY string, apikey string) []*Domai
 	var searchPubTransPathT Domain.SearchPubTransPathT
 	err = json.Unmarshal(data, &searchPubTransPathT)
 
-	var paths []*Domain.Path
-	var ptr *Domain.Path
-
-	for _, streamPath := range searchPubTransPathT.Result.Path {
-		var path Domain.Path
-		ptr = &path
-		IsExist := 0
-		var subptr *Domain.SubPath
-		path.VehiclesType = streamPath.PathType
-		path.GetIn = streamPath.Info.FirstStartStation
-		for _, tempSubPath := range streamPath.SubPath {
-			if tempSubPath.TrafficType == 3 {
-				continue
-			}
-			if tempSubPath.TrafficType == 2 {
-				path.Name = tempSubPath.Lane[0].BusNo
-			}
-			if tempSubPath.TrafficType == 1 {
-				path.Name = tempSubPath.Lane[0].Name
-			}
-			path.VehicleType = tempSubPath.TrafficType
-			path.Getoff = tempSubPath.EndName
-			break
-		}
-		path.MaxTransferNum = streamPath.Info.BusTransitCount + streamPath.Info.SubwayTransitCount
-		path.MinTransferNum = path.MaxTransferNum
-		path.MaxTotalTime = streamPath.Info.TotalTime
-		path.MinTotalTime = streamPath.Info.TotalTime
-
-		for _, SearchSame := range paths {
-			if SearchSame.Name == path.Name && SearchSame.GetIn == path.GetIn && SearchSame.Getoff == path.Getoff {
-				IsExist = 1
-				ptr = SearchSame
-				if ptr.MaxTransferNum < path.MaxTransferNum {
-					ptr.MaxTransferNum = path.MaxTransferNum
-				}
-				if ptr.MinTransferNum > path.MinTransferNum {
-					ptr.MinTransferNum = path.MinTransferNum
-				}
-				if ptr.MaxTotalTime < path.MaxTotalTime {
-					ptr.MaxTotalTime = path.MaxTotalTime
-				}
-				if ptr.MinTotalTime > path.MinTotalTime {
-					ptr.MinTotalTime = path.MinTotalTime
-				}
-			}
-		}
-
-		IsNotFirstSubPath := 0
-		i := 0
-
-		for _, streamSubPath := range streamPath.SubPath {
-			var subpath Domain.SubPath
-			if streamSubPath.TrafficType == 3 {
-				continue
-			}
-			//
-			if IsNotFirstSubPath == 1 {
-				if streamSubPath.TrafficType == 2 {
-					subpath.Name = streamSubPath.Lane[0].BusNo
-				}
-				if streamSubPath.TrafficType == 1 {
-					subpath.Name = streamSubPath.Lane[0].Name
-				}
-				subpath.Gotoff = ptr.Getoff
-				subpath.GetIn = streamSubPath.StartName
-				subpath.Getoff = streamSubPath.EndName
-				subpath.VehicleType = streamSubPath.TrafficType
-				IsNotFirstSubPath++
-
-				ptr.Next = append(ptr.Next, subpath)
-				subptr = &ptr.Next[0]
-				continue
-			}
-			if IsNotFirstSubPath == 0 {
-				IsNotFirstSubPath++
-				continue
-			}
-			if streamSubPath.TrafficType == 1 {
-				subpath.Name = streamSubPath.Lane[0].Name
-			}
-			if streamSubPath.TrafficType == 2 {
-				subpath.Name = streamSubPath.Lane[0].BusNo
-			}
-			subpath.Gotoff = ptr.Next[i].Getoff
-			i++
-			subpath.GetIn = streamSubPath.StartName
-			subpath.Getoff = streamSubPath.EndName
-			subpath.VehicleType = streamSubPath.TrafficType
-
-			subptr.Next = append(subptr.Next, &subpath)
-			subptr = subptr.Next[len(subptr.Next)-1]
-		}
-		if IsExist == 0 {
-			paths = append(paths, &path)
-		}
-	}
-	return paths
+	return searchPubTransPathT
 }
 
 func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Domain.Result {
-	res := CallAPI(SX, SY, EX, EY, apikey)
-
+	response := CallAPI(SX, SY, EX, EY, apikey)
+	res := MatchFirstPath(response)
 	var ResForPrints []*Domain.Result
 
 	for _, path := range res {
@@ -139,22 +169,31 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 		rfp = &Domain.Result{}
 		rfp.Where = path.GetIn
 		isExistrfp := 0
+		isExistrfpnum := 0
+
+		var firstPath *Domain.FirstPath
+		firstPath = &Domain.FirstPath{}
+
 		for _, streamResForPrint := range ResForPrints {
 			if streamResForPrint.Where == rfp.Where {
 				rfp = streamResForPrint
 				isExistrfp = 1
+				for _, streamFirstPaths := range rfp.FirstPaths {
+					if streamFirstPaths.Name == path.Name {
+						isExistrfpnum = 1
+						firstPath = streamFirstPaths
+					}
+				}
 				break
 			}
 		}
+		if isExistrfpnum == 0 {
+			firstPath.Name = path.Name
+			firstPath.TransferNum = Utils.GetFromMinMax(path.MinTransferNum, path.MaxTransferNum, "번")
+			firstPath.TotalTime = Utils.GetFromMinMax(path.MinTotalTime, path.MaxTotalTime, "분")
 
-		var firstPath *Domain.FirstPath
-		firstPath = &Domain.FirstPath{}
-		firstPath.Name = path.Name
-		firstPath.TransferNum = Utils.GetFromMinMax(path.MinTransferNum, path.MaxTransferNum, "번")
-		firstPath.TotalTime = Utils.GetFromMinMax(path.MinTotalTime, path.MaxTotalTime, "분")
-
-		rfp.FirstPaths = append(rfp.FirstPaths, firstPath)
-
+			rfp.FirstPaths = append(rfp.FirstPaths, firstPath)
+		}
 		if isExistrfp == 0 {
 			ResForPrints = append(ResForPrints, rfp)
 		}
