@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import './map.css'
 const { kakao } = window
 
-const Map = ({ searchPlace,ClickList }) => {
+const Map = ({ isSearched,searchPlace,ClickList }) => {
   // 검색결과 배열에 담아줌
   const [Places, setPlaces] = useState([])
   
   useEffect(() => {
+
     var infowindow = new kakao.maps.InfoWindow({ zIndex: 1 })
     var markers = []
       const container = document.getElementById('myMap')
@@ -115,7 +116,9 @@ const Map = ({ searchPlace,ClickList }) => {
           height: '700px',
         }}
       ></div>
-      <div id="result-list">
+      {isSearched ?
+       <div>result</div> : 
+       <div id="result-list">
         {Places.map((item, i) => (
           <div key={i} style={{ marginTop: '20px' }} onClick={()=>ClickList(item)}>
             <span>{i + 1}</span>
@@ -135,6 +138,7 @@ const Map = ({ searchPlace,ClickList }) => {
         ))}
         <div id="pagination"></div>
       </div>
+}
     </div>
   )
 }

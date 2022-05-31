@@ -10,6 +10,8 @@ const SearchPlace = () => {
   const [isStartSubmit, setIsStartSubmit] = useState(true);
   const [start,setStart] = useState({name: "", x:0,y:0});
   const [end,setEnd] = useState({name: "", x:0,y:0});
+  const [isSearched,setIsSearched] = useState(false);
+  const [result, setResult] = useState({});
 
   const onChangeStart = (e) => {
     setInputStart(e.target.value);
@@ -32,11 +34,13 @@ const SearchPlace = () => {
   };
 
   const handleSearch = () =>{
-    console.log('click')
+    console.log('loading...')
+    setIsSearched(true)
     fetch(`http://localhost:3001/Search/${start.x}&${start.y}&${end.x}&${end.y}`)
     .then((respons)=>respons.json())
     .then((res)=>{
       console.log(res);
+      setResult(res);
     })
   }
 
@@ -77,7 +81,7 @@ const SearchPlace = () => {
       </form>
         <button onClick={handleSearch}>경로 검색</button>
 
-      <Map searchPlace={place} ClickList={ClickList}/>
+      <Map searchPlace={place} ClickList={ClickList} isSearched={isSearched}/>
 
       <div className='startPlace'>출발지 : {start.name}</div>
       <div className='startPlace'>도착지 : {end.name}</div>
