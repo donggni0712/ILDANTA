@@ -31,6 +31,15 @@ const SearchPlace = () => {
     setInputEnd("");
   };
 
+  const handleSearch = () =>{
+    console.log('click')
+    fetch(`http://localhost:3001/Search/${start.x}&${start.y}&${end.x}&${end.y}`)
+    .then((respons)=>respons.json())
+    .then((res)=>{
+      console.log(res);
+    })
+  }
+
   function ClickList(item){
     const input = {
       name : item.place_name,
@@ -57,7 +66,6 @@ const SearchPlace = () => {
         />
         <button type="submit">검색</button>
       </form>
-
       <form className="inputForm" onSubmit={handleEndSubmit}>
         <label>도착지 : </label>
         <input
@@ -67,6 +75,8 @@ const SearchPlace = () => {
         />
         <button type="submit">검색</button>
       </form>
+        <button onClick={handleSearch}>경로 검색</button>
+
       <Map searchPlace={place} ClickList={ClickList}/>
 
       <div className='startPlace'>출발지 : {start.name}</div>
