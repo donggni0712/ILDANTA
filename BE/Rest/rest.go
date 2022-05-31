@@ -61,6 +61,8 @@ func Search(rw http.ResponseWriter, r *http.Request) {
 	ey := vars["ey"]
 	//처음 경로 출력
 	result := Service.ShowFirstRoute(sx, sy, ex, ey, Apikey)
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
+	rw.Header().Set("Access-Control-Allow-Methods", "*")
 	rw.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(rw).Encode(result)
 }
@@ -77,6 +79,8 @@ func Choose_TakeOn(rw http.ResponseWriter, r *http.Request) {
 	result := Service.ClickRoute(where, what, tempresult)
 
 	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
+	rw.Header().Set("Access-Control-Allow-Methods", "*")
 	json.NewEncoder(rw).Encode(result)
 }
 
@@ -93,6 +97,8 @@ func Choose_TakeOffandTakeOn(rw http.ResponseWriter, r *http.Request) {
 	result := Service.ClickSubPath(whereOff, whereOn, whatOn, tempresult.AfterPathThemes)
 
 	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
+	rw.Header().Set("Access-Control-Allow-Methods", "*")
 	json.NewEncoder(rw).Encode(result)
 }
 
@@ -105,6 +111,8 @@ func SeeRawData(rw http.ResponseWriter, r *http.Request) {
 	//처음 경로 출력
 	result := ApiClient.CallAPI(sx, sy, ex, ey, Apikey)
 	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
+	rw.Header().Set("Access-Control-Allow-Methods", "*")
 	json.NewEncoder(rw).Encode(result)
 }
 
