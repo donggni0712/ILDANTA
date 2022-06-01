@@ -1,7 +1,7 @@
 package Domain
 
 type FirstPage struct {
-	WhereOns []WhatOnComponent `json:"whereOns"`
+	WhereOns []WhereOnComponent `json:"whereOns"`
 }
 
 type WhereOnComponent struct {
@@ -16,10 +16,13 @@ type WhatOnComponent struct {
 }
 
 type SubPage struct {
-	WhereOffs []WhereOffComponent `json:"whereOffs"`
+	WhatTookOn  string              `json:"whatTookOn"`
+	WhereTookOn string              `json:"whereTookOn"`
+	WhereOffs   []WhereOffComponent `json:"whereOffs"`
 }
 
 type WhereOffComponent struct {
 	WhereOff string             `json:"whereOff"`
+	IsFinal  bool               `json:"isFinal"`
 	WhereOns []WhereOnComponent `json:"whereOns"`
 }

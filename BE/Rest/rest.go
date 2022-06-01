@@ -110,6 +110,46 @@ func SeeRawData(rw http.ResponseWriter, r *http.Request) {
 	ey := vars["ey"]
 	//처음 경로 출력
 	result := ApiClient.CallAPI(sx, sy, ex, ey, Apikey)
+	res := Service.MatchFirstPath(result)
+	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
+	rw.Header().Set("Access-Control-Allow-Methods", "*")
+	json.NewEncoder(rw).Encode(res)
+}
+
+func GetFirstPage(rw http.ResponseWriter, r *http.Request) {
+
+	var requestBody []*Domain.Result
+	Utils.HandleErr(json.NewDecoder(r.Body).Decode(&requestBody))
+	result := Service.GetFirstRout(requestBody)
+
+	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
+	rw.Header().Set("Access-Control-Allow-Methods", "*")
+	json.NewEncoder(rw).Encode(result)
+}
+
+func GetSecondPage(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	where := vars["where"]
+	var requestBody Domain.FirstPath
+	Utils.HandleErr(json.NewDecoder(r.Body).Decode(&requestBody))
+	result := Service.GetFirstSubPath(requestBody, where)
+
+	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
+	rw.Header().Set("Access-Control-Allow-Methods", "*")
+	json.NewEncoder(rw).Encode(result)
+}
+
+func GetSubPage(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	where := vars["where"]
+
+	var requestBody Domain.AfterPathChild
+	Utils.HandleErr(json.NewDecoder(r.Body).Decode(&requestBody))
+	result := Service.GetSubPath(requestBody, where)
+
 	rw.Header().Add("Content-Type", "application/json")
 	rw.Header().Set("Access-Control-Allow-Origin", "*")
 	rw.Header().Set("Access-Control-Allow-Methods", "*")
@@ -121,9 +161,14 @@ func Start(aPort int) {
 	port = fmt.Sprintf(":%d", aPort)
 	router.HandleFunc("/", documentation).Methods("GET")
 	router.HandleFunc("/development/RawData/{sx}&{sy}&{ex}&{ey}", SeeRawData).Methods("GET")
+
 	router.HandleFunc("/Search/{sx}&{sy}&{ex}&{ey}", Search).Methods("GET")
 	router.HandleFunc("/Search/ChooseTakeOn/{whereOn}&{whatOn}", Choose_TakeOn).Methods("GET")
 	router.HandleFunc("/Search/ChooseTakeOffOn/{whereOff}&{whereOn2}&{whatOn2}", Choose_TakeOffandTakeOn).Methods("GET")
+
+	router.HandleFunc("/GetFirstPage", GetFirstPage).Methods("GET")
+	router.HandleFunc("/GetSecondPage/{where}", GetSecondPage).Methods("GET")
+	router.HandleFunc("/GetSubPage/{where}", GetSubPage).Methods("GET")
 
 	fmt.Printf("Listening on http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, router))

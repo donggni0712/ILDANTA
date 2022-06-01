@@ -30,7 +30,28 @@ func IsSameSubPathExist(paths []*Domain.SubPath, name, gotOff, getIn, getOff str
 	return IsExist, result
 }
 
-func addsubpath(streamSubPath Domain.SubPath_response, ptr *Domain.Path, subptr *Domain.SubPath) (Domain.SubPath, *Domain.SubPath) {
+func addFirstsubpath(streamSubPath Domain.SubPath_response, ptr *Domain.Path, subptr *Domain.SubPath) (Domain.SubPath, *Domain.SubPath) {
+	var subpath Domain.SubPath
+	if streamSubPath.TrafficType == 2 {
+		for _, subOfsubPath := range streamSubPath.Lane {
+			subpath.SetSubpath(subOfsubPath.BusNo, ptr.Getoff, streamSubPath.StartName, streamSubPath.EndName, streamSubPath.TrafficType)
+			if IsExist, result := IsSameSubPathExist(ptr.Next, subpath.Name, subpath.Gotoff, subpath.GetIn, subpath.Getoff); IsExist == 1 {
+				subptr = result
+			}
+		}
+	}
+	if streamSubPath.TrafficType == 1 {
+		for _, subOfsubPath := range streamSubPath.Lane {
+			subpath.SetSubpath(subOfsubPath.Name, ptr.Getoff, streamSubPath.StartName, streamSubPath.EndName, streamSubPath.TrafficType)
+			if IsExist, result := IsSameSubPathExist(ptr.Next, subpath.Name, subpath.Gotoff, subpath.GetIn, subpath.Getoff); IsExist == 1 {
+				subptr = result
+			}
+		}
+	}
+	return subpath, subptr
+}
+
+func addsubpath(streamSubPath Domain.SubPath_response, ptr *Domain.SubPath, subptr *Domain.SubPath) (Domain.SubPath, *Domain.SubPath) {
 	var subpath Domain.SubPath
 	if streamSubPath.TrafficType == 2 {
 		for _, subOfsubPath := range streamSubPath.Lane {
@@ -84,7 +105,7 @@ func Match(paths []*Domain.Path, path Domain.Path, streamPaths []Domain.SubPath_
 		}
 
 		if IsNotFirstSubPath == 1 {
-			subpath, subptr = addsubpath(streamSubPath, ptr, subptr)
+			subpath, subptr = addFirstsubpath(streamSubPath, ptr, subptr)
 			IsNotFirstSubPath++
 
 			ptr.Next = append(ptr.Next, &subpath)
@@ -96,7 +117,7 @@ func Match(paths []*Domain.Path, path Domain.Path, streamPaths []Domain.SubPath_
 			continue
 		}
 
-		subpath, subptr = addsubpath(streamSubPath, ptr, subptr)
+		subpath, subptr = addsubpath(streamSubPath, subptr, subptr)
 		i++
 
 		subptr.Next = append(subptr.Next, &subpath)
