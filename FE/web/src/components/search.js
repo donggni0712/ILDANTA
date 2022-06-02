@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import Map from "./map.js";
+import Result from "./result.js"
 
 const {kakao} = window;
 
 const SearchPlace = () => {
+
   const [inputStart, setInputStart] = useState("");
   const [inputEnd, setInputEnd] = useState("");
   const [place, setPlace] = useState("");
@@ -11,8 +13,43 @@ const SearchPlace = () => {
   const [start,setStart] = useState({name: "", x:0,y:0});
   const [end,setEnd] = useState({name: "", x:0,y:0});
   const [isSearched,setIsSearched] = useState(false);
-  const [result, setResult] = useState({});
-
+  const [isFirst,setIsFirst] = useState(true);
+  const [response, setResponse] = useState({
+    whereOns:[
+       {
+            whereOn: null,
+            whatOns: [
+                {
+                    whatOn: null,
+                    transferNum: null,
+                    totalTime: null
+                }
+            ]
+        }
+    ]
+  });
+  
+  const [subPage, setSubPage] = useState({
+    whatTookOn: null,
+    whereTookOn: null,
+    whereOffs:[{
+      whereOff:null,
+      isFinal:false,
+    whereOns:[
+       {
+            whereOn: null,
+            whatOns: [
+                {
+                    whatOn: null,
+                    transferNum: null,
+                    totalTime: null
+                }
+            ]
+        }
+    ]
+  }
+  ]
+  });
   const onChangeStart = (e) => {
     setInputStart(e.target.value);
   };
@@ -36,14 +73,57 @@ const SearchPlace = () => {
   const handleSearch = () =>{
     console.log('loading...')
     setIsSearched(true)
-    fetch(`http://localhost:3001/Search/${start.x}&${start.y}&${end.x}&${end.y}`)
+    const coordinate = JSON.stringify({
+        sx:`${start.x}`,
+        sy:`${start.y}`,
+        ex:`${end.x}`,
+        ey:`${end.y}`
+      });
+    fetch(`http://localhost:3001/Search`, {
+        method: 'POST',
+        body: coordinate
+      })
     .then((respons)=>respons.json())
     .then((res)=>{
-      console.log(res);
-      setResult(res);
+      setIsFirst(true);
+      setResponse(res);
     })
   }
 
+  const ClickFirstPath = (_whereOn, _whatOn) =>{
+    console.log('loading...')
+    setIsSearched(true)
+    const coordinate = {
+        sx:`${start.x}`,
+        sy:`${start.y}`,
+        ex:`${end.x}`,
+        ey:`${end.y}`
+      };
+      
+    const firstPath = {
+      whereOn:_whereOn,
+      whatOn:_whatOn
+    };
+
+    const requestBody = JSON.stringify({
+      coordinate:coordinate,
+      firstChoice:firstPath
+    });
+    console.log(_whereOn,_whatOn)
+    console.log(requestBody)
+    fetch(`http://localhost:3001/Search/Choose`, {
+        method: 'POST',
+        body: requestBody
+      })
+    .then((respons)=>respons.json())
+    .then((res)=>{
+      console.log('here')
+      console.log(res);
+      setIsFirst(false);
+      setSubPage(res);
+    })
+  }
+  
   function ClickList(item){
     const input = {
       name : item.place_name,
@@ -85,6 +165,8 @@ const SearchPlace = () => {
 
       <div className='startPlace'>출발지 : {start.name}</div>
       <div className='startPlace'>도착지 : {end.name}</div>
+
+      <Result response={response} subPage={subPage} ClickFirstPath={ClickFirstPath} isFirst={isFirst}/>
     </>
   );
 };
