@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func ShowFirstRoute(SX string, SY string, EX string, EY string, apikey string) []*Domain.Result {
+func GetFirstRoute(SX string, SY string, EX string, EY string, apikey string) []*Domain.Result {
 	var results []*Domain.Result
 	results = CallRoute(SX, SY, EX, EY, apikey)
 
@@ -35,7 +35,7 @@ func ShowFirstPath(firstPath *Domain.FirstPath, where string) {
 	fmt.Println()
 }
 
-func ClickRoute(where string, what string, results []*Domain.Result) Domain.FirstPath {
+func GetSecondRoute(where string, what string, results []*Domain.Result) Domain.FirstPath {
 
 	var res Domain.FirstPath
 
@@ -72,7 +72,7 @@ func ShowSubPath(subpath *Domain.AfterPathChild, where string) {
 	fmt.Println()
 }
 
-func ClickSubPath(getoff string, getin string, what string, paths []*Domain.AfterPathTheme) Domain.AfterPathChild {
+func GetSubRoute(getoff string, getin string, what string, paths []*Domain.AfterPathTheme) Domain.AfterPathChild {
 
 	var res Domain.AfterPathChild
 

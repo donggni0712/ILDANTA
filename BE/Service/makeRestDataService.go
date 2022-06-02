@@ -4,7 +4,7 @@ import (
 	"ILDANTA/Domain"
 )
 
-func GetFirstRout(results []*Domain.Result) Domain.FirstPage {
+func GetFirstPage(results []*Domain.Result) Domain.FirstPage {
 	var res Domain.FirstPage
 	for _, result := range results {
 		var resWhereOn Domain.WhereOnComponent
@@ -20,6 +20,23 @@ func GetFirstRout(results []*Domain.Result) Domain.FirstPage {
 	}
 
 	return res
+}
+
+func GetSubPage(request Domain.SearchSubPath, apiKey string) Domain.SubPage {
+	var responseOfODsay []*Domain.Result
+	var SecondRoute Domain.FirstPath
+	responseOfODsay = GetFirstRoute(request.Coordinate.Sx, request.Coordinate.Sy, request.Coordinate.Ex, request.Coordinate.Ey, apiKey)
+	SecondRoute = GetSecondRoute(request.FirstChoice.WhereOn, request.FirstChoice.WhatOn, responseOfODsay)
+	if request.Choices == nil {
+		return GetFirstSubPath(SecondRoute, request.FirstChoice.WhereOn)
+	}
+	var SubRoute Domain.AfterPathChild
+	SubRoute = GetSubRoute(request.Choices[0].WhereOff, request.Choices[0].WhereOn, request.Choices[0].WhatOn, SecondRoute.AfterPathThemes)
+	len := len(request.Choices)
+	for i := 1; i < len; i++ {
+		SubRoute = GetSubRoute(request.Choices[i].WhereOff, request.Choices[i].WhereOn, request.Choices[i].WhatOn, SubRoute.AfterPathThemes)
+	}
+	return GetSubPath(SubRoute, request.Choices[len-1].WhereOn)
 }
 
 func GetFirstSubPath(firstPath Domain.FirstPath, where string) Domain.SubPage {
