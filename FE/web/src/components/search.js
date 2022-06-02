@@ -34,7 +34,7 @@ const SearchPlace = () => {
     whereTookOn: null,
     whereOffs:[{
       whereOff:null,
-      isFinal:false,
+      isFinal:0,
     whereOns:[
        {
             whereOn: null,

@@ -1,6 +1,5 @@
 import React from "react";
 import './result.css'
-import { useState } from "react";
 
 const Result = ({response,subPage,ClickFirstPath,isFirst}) =>{
 
@@ -24,6 +23,9 @@ const Result = ({response,subPage,ClickFirstPath,isFirst}) =>{
     return<div className="result">
         <a>여기서 내려서</a>  <a className="whereOn">여기서</a><a className="whereOn">이거타</a>
         {subPage.whereOffs.map((elWhereoff)=>{
+        if(elWhereoff.whereOns==null){
+            return <div>{elWhereoff.whereOff}에서 내려서 걸어가</div>
+        }
         return <div>
             {elWhereoff.whereOff}
             {elWhereoff.whereOns.map((elWhereOn)=>{
