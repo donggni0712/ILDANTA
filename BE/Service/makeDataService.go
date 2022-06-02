@@ -81,6 +81,7 @@ func Match(paths []*Domain.Path, path Domain.Path, streamPaths []Domain.SubPath_
 	IsNotFirstSubPath := 0
 	i := 0
 	IsExist := 0
+
 	if i, res := IsSameExist(paths, path.Name, path.GetIn, path.Getoff); i == 1 {
 		IsExist = 1
 		ptr = res
@@ -126,6 +127,7 @@ func Match(paths []*Domain.Path, path Domain.Path, streamPaths []Domain.SubPath_
 	if IsExist == 0 {
 		paths = append(paths, &path)
 	}
+
 	return paths
 
 }
@@ -200,12 +202,21 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 			ResForPrints = append(ResForPrints, rfp)
 		}
 
+		if path.Next == nil {
+			var afterpathChild *Domain.AfterPathTheme
+			afterpathChild = &Domain.AfterPathTheme{}
+			afterpathChild.IsFinal = 1
+			afterpathChild.Getoff = path.Getoff
+			firstPath.AfterPathThemes = append(firstPath.AfterPathThemes, afterpathChild)
+		}
+
 		for _, subpath := range path.Next {
 			var afterpathChild *Domain.AfterPathChild
 			afterpathChild = &Domain.AfterPathChild{}
 			afterpathChild = AppendAfterPath(firstPath, *subpath)
 			ReculsiveAppend(afterpathChild, *subpath)
 		}
+
 	}
 	return ResForPrints
 

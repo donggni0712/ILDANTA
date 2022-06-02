@@ -13,6 +13,7 @@ type FirstPath struct {
 }
 
 type AfterPathTheme struct {
+	IsFinal          int                `json:"isFinal"`
 	Getoff           string             `json:"whereOff"`
 	AfterPathParents []*AfterPathParent `json:"subPath"`
 }
