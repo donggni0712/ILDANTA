@@ -5,7 +5,11 @@ import Result from "./result.js"
 const {kakao} = window;
 
 const SearchPlace = () => {
-
+  const [choices,setChoices] = useState([])
+  const [firstChoice,setFirstChoice] = useState({
+      whereOn:"",
+      whatOn:""
+    })
   const [inputStart, setInputStart] = useState("");
   const [inputEnd, setInputEnd] = useState("");
   const [place, setPlace] = useState("");
@@ -100,14 +104,17 @@ const SearchPlace = () => {
         ey:`${end.y}`
       };
       
-    const firstPath = {
+    setFirstChoice({
       whereOn:_whereOn,
       whatOn:_whatOn
-    };
+    })
 
     const requestBody = JSON.stringify({
       coordinate:coordinate,
-      firstChoice:firstPath
+      firstChoice:{
+      whereOn:_whereOn,
+      whatOn:_whatOn
+    }
     });
     console.log(_whereOn,_whatOn)
     console.log(requestBody)
@@ -124,6 +131,42 @@ const SearchPlace = () => {
     })
   }
   
+const ClickPath = (_whereOff, _whereOn, _whatOn) =>{
+    console.log('loading...')
+    setIsSearched(true)
+    const coordinate = {
+        sx:`${start.x}`,
+        sy:`${start.y}`,
+        ex:`${end.x}`,
+        ey:`${end.y}`
+      };
+    const requestChoices = {
+      whereOff:_whereOff,
+      whereOn:_whereOn,
+      whatOn:_whatOn
+    }
+    const requestBody = JSON.stringify({
+      coordinate:coordinate,
+      firstChoice:firstChoice,
+      choices:[...choices,requestChoices]
+    });
+
+    setChoices([...choices,requestChoices])
+    console.log(_whereOn,_whatOn)
+    console.log(requestBody)
+    fetch(`http://localhost:3001/Search/Choose`, {
+        method: 'POST',
+        body: requestBody
+      })
+    .then((respons)=>respons.json())
+    .then((res)=>{
+      console.log('here')
+      console.log(res);
+      setIsFirst(false);
+      setSubPage(res);
+    })
+  }
+
   function ClickList(item){
     const input = {
       name : item.place_name,
@@ -166,7 +209,7 @@ const SearchPlace = () => {
       <div className='startPlace'>출발지 : {start.name}</div>
       <div className='startPlace'>도착지 : {end.name}</div>
 
-      <Result response={response} subPage={subPage} ClickFirstPath={ClickFirstPath} isFirst={isFirst}/>
+      <Result response={response} subPage={subPage} ClickFirstPath={ClickFirstPath} ClickPath={ClickPath} isFirst={isFirst}/>
     </>
   );
 };

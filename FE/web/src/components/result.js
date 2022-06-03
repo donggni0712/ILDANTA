@@ -1,7 +1,7 @@
 import React from "react";
 import './result.css'
 
-const Result = ({response,subPage,ClickFirstPath,isFirst}) =>{
+const Result = ({response,subPage,ClickFirstPath,ClickPath,isFirst}) =>{
 
     if(isFirst==true){
     return <div className="result">
@@ -32,7 +32,7 @@ const Result = ({response,subPage,ClickFirstPath,isFirst}) =>{
                 return <div className="whereOn">
                     <a>{elWhereOn.whereOn}</a>
                     {elWhereOn.whatOns.map((el)=>{
-                        return<div className="whereOn">{el.whatOn}</div>
+                        return<div className="whereOn" onClick={()=>{ClickPath(elWhereoff.whereOff,elWhereOn.whereOn,el.whatOn)}}>{el.whatOn}</div>
                     })}
                     </div>
             })}
