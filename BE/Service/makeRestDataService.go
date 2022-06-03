@@ -46,7 +46,6 @@ func GetFirstSubPath(firstPath Domain.FirstPath, where string) Domain.SubPage {
 	for _, afterPathTheme := range firstPath.AfterPathThemes {
 		var resWhereOff Domain.WhereOffComponent
 		resWhereOff.WhereOff = afterPathTheme.Getoff
-		resWhereOff.IsFinal = false
 		for _, afterPathParent := range afterPathTheme.AfterPathParents {
 			var resWhereOn Domain.WhereOnComponent
 			resWhereOn.WhereOn = afterPathParent.Getin
@@ -68,14 +67,12 @@ func GetSubPath(subpath Domain.AfterPathChild, where string) Domain.SubPage {
 	res.WhatTookOn = subpath.NextName
 	if subpath.IsFinal == 1 {
 		var resWhereOff Domain.WhereOffComponent
-		resWhereOff.IsFinal = true
 		resWhereOff.WhereOff = subpath.Getoff
 		res.WhereOffs = append(res.WhereOffs, resWhereOff)
 		return res
 	}
 	for _, afterPathTheme := range subpath.AfterPathThemes {
 		var resWhereOff Domain.WhereOffComponent
-		resWhereOff.IsFinal = false
 		resWhereOff.WhereOff = afterPathTheme.Getoff
 		for _, afterPathParent := range afterPathTheme.AfterPathParents {
 			var resWhereOn Domain.WhereOnComponent

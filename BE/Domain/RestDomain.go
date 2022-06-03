@@ -23,7 +23,6 @@ type SubPage struct {
 
 type WhereOffComponent struct {
 	WhereOff string             `json:"whereOff"`
-	IsFinal  bool               `json:"isFinal"`
 	WhereOns []WhereOnComponent `json:"whereOns"`
 }
 
