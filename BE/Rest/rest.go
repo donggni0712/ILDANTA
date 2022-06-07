@@ -14,9 +14,10 @@ import (
 
 var port string
 
-var Apikey = "Mi%2B95EDTMwWb2pbwhatNbhwx4tE4XkBsZ1GiAS2HoGI"
+var Apikey = ""
 
 func Search(rw http.ResponseWriter, r *http.Request) {
+
 	var requestBody Domain.Search
 	Utils.HandleErr(json.NewDecoder(r.Body).Decode(&requestBody))
 
@@ -55,7 +56,9 @@ func RawData(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Access-Control-Allow-Methods", "*")
 	json.NewEncoder(rw).Encode(response)
 }
-func Start(aPort int) {
+func Start(aPort int, apikey string) {
+
+	Apikey = apikey
 	router := mux.NewRouter()
 	port = fmt.Sprintf(":%d", aPort)
 
