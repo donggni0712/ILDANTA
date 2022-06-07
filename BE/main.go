@@ -1,9 +1,25 @@
 package main
 
-import "ILDANTA/Rest"
+import (
+	"ILDANTA/Rest"
+	"log"
+	"os"
+	"strconv"
+
+	"github.com/joho/godotenv"
+)
 
 func main() {
-	Rest.Start(3001)
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		log.Fatal("Error loading port number")
+	}
+	Rest.Start(port, os.Getenv("ODSAY_API_KEY"))
 	/*
 		SX := "127.08186574229312"
 		SY := "37.23993898645113"
