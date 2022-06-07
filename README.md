@@ -7,9 +7,13 @@
 
 ![MockUp](./DOC/img/ILDANTA_UI.gif)
 
+## Flow Chart
+
+![FlowChart](./DOC/img/ILDANTA_FlowChart.png)
+
 ## RestAPI
 
-##### [API REFERENCE 참조하기](./BE/API_Reference.md#api-reference)
+##### [API REFERENCE 참조하기](./BE/README.md#api-reference)
 
 - **Search** : [POST] /Search
 - **Choose** : [POST] /Search/Choose
