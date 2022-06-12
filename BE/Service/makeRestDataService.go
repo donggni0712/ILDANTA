@@ -2,6 +2,7 @@ package Service
 
 import (
 	"ILDANTA/Domain"
+	"ILDANTA/Utils"
 )
 
 func GetFirstPage(results []*Domain.Result) Domain.FirstPage {
@@ -12,8 +13,8 @@ func GetFirstPage(results []*Domain.Result) Domain.FirstPage {
 		for _, firstPath := range result.FirstPaths {
 			var resWhatOn Domain.WhatOnComponent
 			resWhatOn.WhatOn = firstPath.Name
-			resWhatOn.TotalTime = firstPath.TotalTime
-			resWhatOn.TransferNum = firstPath.TransferNum
+			resWhatOn.TotalTime = Utils.GetFromMinMax(firstPath.MinTotalTime, firstPath.MaxTotalTime, "분")
+			resWhatOn.TransferNum = Utils.GetFromMinMax(firstPath.MinTransferNum, firstPath.MaxTransferNum, "번")
 			resWhereOn.WhatOns = append(resWhereOn.WhatOns, resWhatOn)
 		}
 		res.WhereOns = append(res.WhereOns, resWhereOn)

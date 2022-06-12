@@ -7,8 +7,10 @@ type Result struct {
 
 type FirstPath struct {
 	Name            string            `json:"whatOn"`
-	TransferNum     string            `json:"transferNum"`
-	TotalTime       string            `json:"totalTime"`
+	MaxTransferNum  int               `json:"maxTransferNum"`
+	MinTransferNum  int               `json:"minTransferNum"`
+	MaxTotalTime    int               `json:"maxTotalTime"`
+	MinTotalTime    int               `json:"minTotalTime"`
 	AfterPathThemes []*AfterPathTheme `json:"subPath"`
 }
 

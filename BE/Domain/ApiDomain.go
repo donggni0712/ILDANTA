@@ -76,29 +76,25 @@ type SubPath_response struct {
 }
 
 type Path struct {
-	Name           string
-	GetIn          string
-	Getoff         string
-	VehicleType    int
-	VehiclesType   int
-	MaxTransferNum int
-	MinTransferNum int
-	Payment        int
-	MaxTotalTime   int
-	MinTotalTime   int
-	Next           []*SubPath
+	Name         string
+	GetIn        string
+	Getoff       string
+	VehicleType  int
+	VehiclesType int
+	TransferNum  int
+	Payment      int
+	TotalTime    int
+	Next         []*SubPath
 }
 
-func (path *Path) SetPath(Name, GetIn, GetOff string, VehicleType, MaxtransferNum, MinTransferNum, MaxTotalTime, MinTotalTime int) {
+func (path *Path) SetPath(Name, GetIn, GetOff string, VehicleType, TransferNum, TotalTime int) {
 	path.Name = Name
 	path.GetIn = GetIn
 	path.Getoff = GetOff
 	path.VehicleType = VehicleType
 
-	path.MaxTransferNum = MaxtransferNum
-	path.MinTransferNum = MinTransferNum
-	path.MaxTotalTime = MaxTotalTime
-	path.MinTotalTime = MinTotalTime
+	path.TransferNum = TransferNum
+	path.TotalTime = TotalTime
 }
 
 type SubPath struct {

@@ -3,15 +3,15 @@ package Service
 import (
 	"ILDANTA/ApiClient"
 	"ILDANTA/Domain"
-	"ILDANTA/Utils"
+	"fmt"
 )
 
 //https://api.odsay.com/v1/api/searchPubTransPathT?lang=0&SX=127.08186574229312&SY=37.23993898645113&EX=127.05981200975921&EY=37.28556112210226&apiKey=Mi%2B95EDTMwWb2pbwhatNbhwx4tE4XkBsZ1GiAS2HoGI
 
-func IsSameExist(paths []*Domain.Path, name, getIn, getOff string) (IsExist int, result *Domain.Path) {
+func IsSameExist(paths []*Domain.Path, path Domain.Path) (IsExist int, result *Domain.Path) {
 	IsExist = 0
 	for _, SearchSame := range paths {
-		if SearchSame.Name == name && SearchSame.GetIn == getIn && SearchSame.Getoff == getOff {
+		if SearchSame.Name == path.Name && SearchSame.GetIn == path.GetIn && SearchSame.Getoff == path.Getoff {
 			IsExist = 1
 			result = SearchSame
 		}
@@ -82,21 +82,9 @@ func Match(paths []*Domain.Path, path Domain.Path, streamPaths []Domain.SubPath_
 	i := 0
 	IsExist := 0
 
-	if i, res := IsSameExist(paths, path.Name, path.GetIn, path.Getoff); i == 1 {
+	if i, res := IsSameExist(paths, path); i == 1 {
 		IsExist = 1
 		ptr = res
-		if ptr.MaxTransferNum < path.MaxTransferNum {
-			ptr.MaxTransferNum = path.MaxTransferNum
-		}
-		if ptr.MinTransferNum > path.MinTransferNum {
-			ptr.MinTransferNum = path.MinTransferNum
-		}
-		if ptr.MaxTotalTime < path.MaxTotalTime {
-			ptr.MaxTotalTime = path.MaxTotalTime
-		}
-		if ptr.MinTotalTime > path.MinTotalTime {
-			ptr.MinTotalTime = path.MinTotalTime
-		}
 	}
 
 	for _, streamSubPath := range streamPaths {
@@ -145,15 +133,15 @@ func MatchFirstPath(response Domain.SearchPubTransPathT) []*Domain.Path {
 			if tempSubPath.TrafficType == 2 {
 				for _, busLists := range tempSubPath.Lane {
 					path.SetPath(busLists.BusNo, streamPath.Info.FirstStartStation, tempSubPath.EndName,
-						streamPath.PathType, streamPath.Info.BusTransitCount+streamPath.Info.SubwayTransitCount, path.MaxTransferNum,
-						streamPath.Info.TotalTime, streamPath.Info.TotalTime)
+						streamPath.PathType, streamPath.Info.BusTransitCount+streamPath.Info.SubwayTransitCount,
+						streamPath.Info.TotalTime)
 					paths = Match(paths, path, streamPath.SubPath)
 				}
 			}
 			if tempSubPath.TrafficType == 1 {
 				path.SetPath(tempSubPath.Lane[0].Name, streamPath.Info.FirstStartStation, tempSubPath.EndName,
-					streamPath.PathType, streamPath.Info.BusTransitCount+streamPath.Info.SubwayTransitCount, path.MaxTransferNum,
-					streamPath.Info.TotalTime, streamPath.Info.TotalTime)
+					streamPath.PathType, streamPath.Info.BusTransitCount+streamPath.Info.SubwayTransitCount,
+					streamPath.Info.TotalTime)
 
 				paths = Match(paths, path, streamPath.SubPath)
 			}
@@ -185,6 +173,20 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 				for _, streamFirstPaths := range rfp.FirstPaths {
 					if streamFirstPaths.Name == path.Name {
 						isExistrfpnum = 1
+						fmt.Printf("firstPath.MinTotalTime = %d path.TotalTime = %d\n", streamFirstPaths.MinTotalTime, path.TotalTime)
+
+						if streamFirstPaths.MaxTransferNum < path.TransferNum {
+							streamFirstPaths.MaxTransferNum = path.TransferNum
+						}
+						if streamFirstPaths.MinTransferNum > path.TransferNum {
+							streamFirstPaths.MinTransferNum = path.TransferNum
+						}
+						if streamFirstPaths.MaxTotalTime < path.TotalTime {
+							streamFirstPaths.MaxTotalTime = path.TotalTime
+						}
+						if streamFirstPaths.MinTotalTime > path.TotalTime {
+							streamFirstPaths.MinTotalTime = path.TotalTime
+						}
 						firstPath = streamFirstPaths
 					}
 				}
@@ -193,8 +195,11 @@ func CallRoute(SX string, SY string, EX string, EY string, apikey string) []*Dom
 		}
 		if isExistrfpnum == 0 {
 			firstPath.Name = path.Name
-			firstPath.TransferNum = Utils.GetFromMinMax(path.MinTransferNum, path.MaxTransferNum, "번")
-			firstPath.TotalTime = Utils.GetFromMinMax(path.MinTotalTime, path.MaxTotalTime, "분")
+			firstPath.MaxTransferNum = path.TransferNum
+			firstPath.MinTransferNum = path.TransferNum
+
+			firstPath.MaxTotalTime = path.TotalTime
+			firstPath.MinTotalTime = path.TotalTime
 
 			rfp.FirstPaths = append(rfp.FirstPaths, firstPath)
 		}

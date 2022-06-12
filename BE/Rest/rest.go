@@ -1,6 +1,7 @@
 package Rest
 
 import (
+	"ILDANTA/ApiClient"
 	"ILDANTA/Domain"
 	"ILDANTA/Service"
 	"ILDANTA/Utils"
@@ -48,8 +49,8 @@ func RawData(rw http.ResponseWriter, r *http.Request) {
 	Utils.HandleErr(json.NewDecoder(r.Body).Decode(&requestBody))
 
 	//처음 경로 출력
-	var response []*Domain.Result
-	response = Service.GetFirstRoute(requestBody.Sx, requestBody.Sy, requestBody.Ex, requestBody.Ey, Apikey)
+	var response []*Domain.Path
+	response = Service.MatchFirstPath(ApiClient.CallAPI(requestBody.Sx, requestBody.Sy, requestBody.Ex, requestBody.Ey, Apikey))
 
 	rw.Header().Add("Content-Type", "application/json")
 	rw.Header().Set("Access-Control-Allow-Origin", "*")

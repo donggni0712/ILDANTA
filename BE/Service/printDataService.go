@@ -2,6 +2,7 @@ package Service
 
 import (
 	"ILDANTA/Domain"
+	"ILDANTA/Utils"
 	"fmt"
 )
 
@@ -13,7 +14,7 @@ func GetFirstRoute(SX string, SY string, EX string, EY string, apikey string) []
 	for _, result := range results {
 		fmt.Printf("\n====================================================================\n%15s\t", result.Where)
 		for _, firstPath := range result.FirstPaths {
-			fmt.Printf("\t%10s %10s %10s\n\t\t\t", firstPath.Name, firstPath.TransferNum, firstPath.TotalTime)
+			fmt.Printf("\t%10s %10s %10s\n\t\t\t", firstPath.Name, Utils.GetFromMinMax(firstPath.MinTotalTime, firstPath.MaxTotalTime, "분"), Utils.GetFromMinMax(firstPath.MinTransferNum, firstPath.MaxTransferNum, "번"))
 		}
 	}
 
