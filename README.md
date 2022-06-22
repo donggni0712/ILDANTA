@@ -1,5 +1,14 @@
 # ILDANTA
 
+<p align="center">
+	<a href="https://https://github.com/donggni0712/ILDANTA/search?l=JavaScript&type=code"><img alt="GitHub language count" src="https://img.shields.io/github/languages/count/donggni0712/ILDANTA"></a>
+	<a href="https://github.com/donggni0712/ILDANTA/graphs/contributors"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/donggni0712/ILDANTA?color=success"></a>
+	<a href="https://github.com/donggni0712/ILDANTA/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/donggni0712/ILDANTA"></a>
+	<a href="https://github.com/donggni0712/ILDANTA/network/members"><img alt="GitHub forks" src="https://img.shields.io/github/forks/donggni0712/ILDANTA"></a>
+	<a href="https://github.com/donggni0712/ILDANTA/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/donggni0712/ILDANTA"></a><br>
+    <a href="https://www.youtube.com/watch?v=qoCpZwnwJdk"><img src="https://img.shields.io/youtube/likes/qoCpZwnwJdk?style=social"></a>
+  </p>
+
 ![LOGO](./DOC/img/LOGO.png)
 급하게 대중교통을 탈 땐, 일단 타!
 
@@ -10,6 +19,15 @@
 ## Flow Chart
 
 ![FlowChart](./DOC/img/ILDANTA_FlowChart.png)
+
+## Service
+
+**대중교통 길찾기 기능을 이용할 수 있고, 어떤 버스를 탄 이후의 환승정보를 보기 간편하게 출력해준다.**
+
+예를 들어, 7000번을 이미 탔다면 7000번을 탄 후 어디서 내려서 어떤 버스로 환승하는 지를 보여준다.
+| 메인화면 | 길찾기 | 경로 출력1 | 경로 출력2 |
+| :--------------------------: | :-------------------------------: | :-------------------------------: | :-------------------------------: |
+| ![main](./DOC/img/Main1.png) | ![Search1](./DOC/img/Search1.png) | ![Search2](./DOC/img/Search2.png) | ![Search3](./DOC/img/Search3.png) |
 
 ## RestAPI
 
