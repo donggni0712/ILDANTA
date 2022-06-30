@@ -12,22 +12,15 @@
 ![LOGO](./DOC/img/LOGO.png)
 급하게 대중교통을 탈 땐, 일단 타!
 
-## Mock-up
-
-![MockUp](./DOC/img/ILDANTA_UI.gif)
-
-## Flow Chart
-
-![FlowChart](./DOC/img/ILDANTA_FlowChart.png)
-
 ## Service
 
 **대중교통 길찾기 기능을 이용할 수 있고, 어떤 버스를 탄 이후의 환승정보를 보기 간편하게 출력해준다.**
 
-예를 들어, 7000번을 이미 탔다면 7000번을 탄 후 어디서 내려서 어떤 버스로 환승하는 지를 보여준다.
-| 메인화면 | 길찾기 | 경로 출력1 | 경로 출력2 |
-| :--------------------------: | :-------------------------------: | :-------------------------------: | :-------------------------------: |
-| ![main](./DOC/img/Main1.png) | ![Search1](./DOC/img/Search1.png) | ![Search2](./DOC/img/Search2.png) | ![Search3](./DOC/img/Search3.png) |
+![Service](./DOC/img/ILDANTA_SERVICE.png)
+
+## Flow Chart
+
+![FlowChart](./DOC/img/ILDANTA_FlowChart.png)
 
 ## RestAPI
 
